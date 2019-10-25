@@ -1,5 +1,15 @@
 {
   "expo": {
+    "packagerOpts": {
+      "config": "metro.config.js",
+      "sourceExts": [
+        "js",
+        "jsx",
+        "svg",
+        "ts",
+        "tsx"
+      ]
+    },
     "name": "MomoProject",
     "slug": "MomoProject",
     "privacy": "public",
