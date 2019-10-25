@@ -117,8 +117,8 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
     },
     shopAdditionalInfo: {
-        flex: 0.5,
-        paddingTop: 20
+        flex: 0.55,
+        paddingTop: 20,
     },
     description: {
         fontSize: 16,
@@ -192,10 +192,13 @@ const styles = StyleSheet.create({
         bottom: 0,
         left: 0,
         width: '100%',
-        height: 80,
+        height: '8%',
         backgroundColor: '#E9895D',
-        borderTopLeftRadius: 40,
-        borderTopRightRadius: 40,
+        // borderTopLeftRadius: 40,
+        // borderTopRightRadius: 40,
+        // borderBottomRightRadius: 40,
+        // borderBottmLeftRadius: 40,
+        borderRadius: 40,
 
         alignItems: 'center',
         justifyContent: 'center',
