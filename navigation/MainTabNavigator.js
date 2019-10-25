@@ -2,11 +2,14 @@ import React from 'react';
 import { Platform } from 'react-native';
 import { createStackNavigator, createBottomTabNavigator } from 'react-navigation';
 
-import TabBarIcon from '../components/TabBarIcon';
+import TabBar from '../components/TabBar'
 
 import RecommendScreen from '../screens/RecommendScreen';
 import SearchScreen from '../screens/SearchScreen';
 import DetailScreen from '../screens/DetailScreen.js';
+
+import IconHome from '../assets/svg/home.svg'
+import IconSearch from '../assets/svg/search.svg'
 
 const config = Platform.select({
   web: { headerMode: 'screen' },
@@ -38,13 +41,10 @@ RecommendStack.navigationOptions = ({ navigation }) => {
   return {
     tabBarLabel: 'Today',
     tabBarIcon: ({ focused }) => (
-      <TabBarIcon
-        focused={focused}
-        name={
-          Platform.OS === 'ios'
-            ? `ios-information-circle${focused ? '' : '-outline'}`
-            : 'md-information-circle'
-        }
+      <IconHome
+        height={31}
+        width={31}
+        fill={focused ? '#FFF' : '#C5C5C5'}
       />
     ),
   }
@@ -72,13 +72,10 @@ SearchStack.navigationOptions = ({ navigation }) => {
   return {
     tabBarLabel: 'Search',
     tabBarIcon: ({ focused }) => (
-      <TabBarIcon
-        focused={focused}
-        name={
-          Platform.OS === 'ios'
-            ? `ios-information-circle${focused ? '' : '-outline'}`
-            : 'md-information-circle'
-        }
+      <IconSearch
+        height={31}
+        width={31}
+        fill={focused ? '#FFF' : '#C5C5C5'}
       />
     ),
   }
@@ -95,6 +92,7 @@ const tabNavigator = createBottomTabNavigator({
 },
   {
     initialRouteName: 'RecommendStack',
+    tabBarComponent: TabBar,
   }
 );
 

@@ -4,12 +4,15 @@ import {
     Text,
     StyleSheet,
     Image,
-    TouchableOpacity
+    TouchableOpacity,
+    Dimensions
 } from 'react-native'
 
 import IconShop from '../assets/svg/shop.svg'
 import IconHeart from '../assets/svg/heart.svg'
 import IconStar from '../assets/svg/star.svg'
+
+const windowWidth = Dimensions.get("window").width;
 
 const Item = (props) => {
     const { title, vote, shop, isLove, price, image, onPressItem } = props;
@@ -56,8 +59,7 @@ function roundHalf(num) {
 const styles = StyleSheet.create({
     border: {
         marginVertical: 10,
-
-        width: 340,
+        width: 9.5384615385 * windowWidth / 12,
         height: 100,
         borderRadius: 15,
         alignItems: 'center',
@@ -77,7 +79,7 @@ const styles = StyleSheet.create({
     },
     container: {
         // backgroundColor: 'red',
-        width: 320,
+        width: 8.9615384615* windowWidth / 12,
         height: 80,
         flexDirection: 'row',
         alignItems: 'center',
@@ -88,10 +90,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     midInfo: {
+        // backgroundColor: 'red',
         paddingLeft: 10,
     },
     itemTitle: {
-        fontSize: 18,
+        
+        fontSize: 0.6923076923 * windowWidth / 17,
         fontWeight: 'bold',
         color: '#3C3D47'
     },
@@ -104,7 +108,7 @@ const styles = StyleSheet.create({
     },
     shopName: {
         paddingLeft: 3,
-        fontSize: 14,
+        fontSize: 0.5384615385 * windowWidth / 17,
         color: '#8B8B8B'
     },
     itemPhoto: {

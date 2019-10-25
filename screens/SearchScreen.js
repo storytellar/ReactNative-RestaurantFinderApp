@@ -1,23 +1,27 @@
 import React from 'react'
-import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, TextInput, SafeAreaView, Dimensions } from 'react-native'
+
+const windowWidth = Dimensions.get("window").width;
 
 const SearchScreen = (props) => {
-    const [value, onChangeText] = React.useState('Useless Placeholder');
+    const [value, onChangeText] = React.useState('');
 
 
     return (
-        <View style={styles.container}>
-            <Text>SearchScreen</Text>
-            <TextInput
-                style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
-                onChangeText={text => onChangeText(text)}
-                value={value}
-            />
-            <TouchableOpacity
-                onPress={() => props.navigation.navigate("Detail")}>
-                <Text>(Click me for details)</Text>
-            </TouchableOpacity>
-        </View>
+        <SafeAreaView style={styles.container}>
+            <View style={styles.header}>
+                <Text style={styles.headerText}>
+                    Everythings that you need!
+                </Text>
+
+                <TextInput
+                    style={styles.input}
+                    placeholder = "The coffee house..." 
+                    onChangeText={text => onChangeText(text)}
+                    value={value}
+                />
+            </View>
+        </SafeAreaView>
     )
 }
 
@@ -29,7 +33,37 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: 'center',
-        justifyContent: 'center',
+    },
+    headerText: {
+        marginTop: 30,
+        fontSize: 26,
+        fontWeight: 'bold',
+        color: '#E9895D',
+        width: 256,
+        letterSpacing: 2.69,
+    },
+    input: {
+        marginTop: 20,
+        width: 340,
+        height: 60,
+        borderColor: 'gray',
+        borderRadius: 18,
+        backgroundColor: 'white',
+        paddingLeft: 15,
+
+        fontSize: 18,
+        fontWeight: '400',
+        color: '#3C3D47',
+
+        shadowColor: "#D8BCA8",
+        shadowOffset: {
+            width: -2,
+            height: 5,
+        },
+        shadowOpacity: 1,
+        shadowRadius: 10,
+
+        elevation: 7,
     }
 })
 

@@ -39,7 +39,7 @@ const DetailScreen = (props) => {
                     </View>
                 </View>
                 <View style={styles.shopAdditionalInfo}>
-                    <ScrollView contentContainerStyle={styles.centerAll}>
+                    <ScrollView contentContainerStyle={styles.centerAll} showsVerticalScrollIndicator={false}>
                         <Text style={styles.description}>
                             Otoké trong tiếng Hàn Quốc nghĩa là «Wow» hay «Làm sao đây?»
                             Và đó cũng chính là cảm giác mà chúng tôi muốn mang đến cho người yêu ẩm thực khi thưởng thức món gà rán trứ danh.
