@@ -4,7 +4,8 @@ import {
     Text,
     StyleSheet,
     TouchableOpacity,
-    Image
+    Image,
+    Dimensions
 } from 'react-native'
 
 import IconHeart from '../assets/svg/heart.svg'
@@ -14,6 +15,8 @@ import IconOffer from '../assets/svg/offer.svg'
 
 import Item from '../components/Item'
 import { ScrollView } from 'react-native-gesture-handler'
+
+const windowWidth = Dimensions.get("window").width;
 
 const DetailScreen = (props) => {
     return (
@@ -128,8 +131,8 @@ const styles = StyleSheet.create({
         paddingBottom: 10,
     },
     shopInfo: {
-        flex: 0.7,
-        justifyContent: 'space-between'
+        flexGrow: 0.7,
+        justifyContent: 'flex-end'
     },
     rowDirection: {
         flexDirection: 'row',

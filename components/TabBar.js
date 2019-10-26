@@ -78,6 +78,7 @@ const S = StyleSheet.create({
         borderRadius: 40,
         borderWidth: 1,
         borderColor: '#EAEAEA',
+        backgroundColor: 'white'
     },
     tabButton: {
         flex: 1,
@@ -101,7 +102,7 @@ const S = StyleSheet.create({
         justifyContent: 'center',
     },
     spotLight: {
-        width: 143,
+        width: 0.34333 * windowWidth,
         height: 52,
         backgroundColor: "#E9895D",
         padding: 10,

@@ -1,5 +1,11 @@
 import React from 'react'
-import { View, Text, StyleSheet, TextInput, SafeAreaView, Dimensions } from 'react-native'
+import {
+    View, Text, StyleSheet, TextInput, SafeAreaView,
+    Dimensions,
+    TouchableOpacity
+} from 'react-native'
+
+import IconSearch from '../assets/svg/search.svg'
 
 const windowWidth = Dimensions.get("window").width;
 
@@ -13,13 +19,19 @@ const SearchScreen = (props) => {
                 <Text style={styles.headerText}>
                     Everythings that you need!
                 </Text>
-
-                <TextInput
-                    style={styles.input}
-                    placeholder = "The coffee house..." 
-                    onChangeText={text => onChangeText(text)}
-                    value={value}
-                />
+                <View style={styles.searchBoxWrapper}>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="The coffee house..."
+                        onChangeText={text => onChangeText(text)}
+                        value={value}
+                    />
+                    <TouchableOpacity
+                        style={styles.searchButton}>
+                        <IconSearch width={32} height={32}
+                            fill={'white'} />
+                    </TouchableOpacity>
+                </View>
             </View>
         </SafeAreaView>
     )
@@ -33,6 +45,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: 'center',
+        backgroundColor: '#FFFCFA'
     },
     headerText: {
         marginTop: 30,
@@ -42,28 +55,44 @@ const styles = StyleSheet.create({
         width: 256,
         letterSpacing: 2.69,
     },
-    input: {
+    searchBoxWrapper: {
+        // backgroundColor: 'red',
+        width: 0.82 * windowWidth,
+        flexDirection: 'row',
         marginTop: 20,
-        width: 340,
+        alignItems: 'center',
         height: 60,
         borderColor: 'gray',
         borderRadius: 18,
         backgroundColor: 'white',
         paddingLeft: 15,
 
-        fontSize: 18,
-        fontWeight: '400',
-        color: '#3C3D47',
+        justifyContent: 'space-between',
 
         shadowColor: "#D8BCA8",
         shadowOffset: {
             width: -2,
-            height: 5,
+            height: 4,
         },
-        shadowOpacity: 1,
+        shadowOpacity: 10,
         shadowRadius: 10,
 
         elevation: 7,
+    },
+    input: {
+        width: 0.82 * windowWidth - 90,
+        fontSize: 18,
+        fontWeight: '400',
+        color: '#3C3D47',
+    },
+    searchButton: {
+        backgroundColor: '#E9895D',
+        width: 52,
+        height: 52,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 20,
+        marginRight: 5,
     }
 })
 

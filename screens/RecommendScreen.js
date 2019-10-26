@@ -20,7 +20,7 @@ const RecommendScreen = (props) => {
     }
 
     // Quick VIEW for develop Front-end
-    // props.navigation.navigate("Search")
+    props.navigation.navigate("Search")
 
     return (
         <SafeAreaView style={styles.container}>
