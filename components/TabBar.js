@@ -95,7 +95,7 @@ const S = StyleSheet.create({
     },
     buttonText: {
         fontSize: 22,
-        color: '#EBEBEB',
+        color: 'white',
         paddingLeft: 5,
     },
     animationButton: {
