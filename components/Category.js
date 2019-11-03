@@ -10,7 +10,7 @@ const Category = props => {
       <View style={styles.categoryItem}>
         <TouchableOpacity onPress={onPressButton}>
           <View style={styles.circle}>
-            <IconBeer width={23} height={27} fill={"#3C3D47"} />
+            <IconBeer width={30} height={30}  />
           </View>
         </TouchableOpacity>
         <Text style={styles.text}>{name}</Text>

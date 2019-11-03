@@ -74,7 +74,7 @@ const DetailScreen = (props) => {
             <View style={styles.OrderButtonBox}>
                 <TouchableOpacity onPress={() => alert('Call 19001009')}>
                     <Text style={{ color: 'white', fontSize: 22, fontWeight: 'bold' }}>
-                        Đặt bàn ngay!
+                        Table now !
                     </Text>
                 </TouchableOpacity>
             </View>
@@ -197,11 +197,11 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '8%',
         backgroundColor: '#E9895D',
-        // borderTopLeftRadius: 40,
-        // borderTopRightRadius: 40,
+        // borderTopLeftRadius: '8%',
+        // borderTopRightRadius: '8%',
         // borderBottomRightRadius: 40,
         // borderBottmLeftRadius: 40,
-        borderRadius: 40,
+        // borderRadius: 40,
 
         alignItems: 'center',
         justifyContent: 'center',

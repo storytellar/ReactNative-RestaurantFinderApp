@@ -10,9 +10,11 @@ import TabBar from "../components/TabBar";
 import RecommendScreen from "../screens/RecommendScreen";
 import SearchScreen from "../screens/SearchScreen";
 import DetailScreen from "../screens/DetailScreen.js";
+import AccountScreen from "../screens/AccountScreen.js";
 
 import IconHome from "../assets/svg/home.svg";
 import IconSearch from "../assets/svg/search.svg";
+import IconUser from "../assets/svg/user.svg";
 
 const config = Platform.select({
   web: { headerMode: "screen" },
@@ -69,11 +71,32 @@ SearchStack.navigationOptions = ({ navigation }) => {
 };
 
 SearchStack.path = "";
+//#endregion
+
+//#region AcountScreen
+const AccountStack = createStackNavigator(
+  {
+    Account: AccountScreen,
+  },
+  config
+);
+
+AccountStack.navigationOptions =  {
+    tabBarLabel: "Me",
+    tabBarIcon: ({ focused }) => (
+      <IconUser height={31} width={31}  />
+    )
+};
+
+AccountStack.path = "";
+//#endregion
+
 
 const tabNavigator = createBottomTabNavigator(
   {
+    SearchStack,
     RecommendStack,
-    SearchStack
+    AccountStack
   },
   {
     initialRouteName: "RecommendStack",

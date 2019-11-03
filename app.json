@@ -12,7 +12,7 @@
     },
     "name": "MomoProject",
     "slug": "MomoProject",
-    "privacy": "public",
+    "privacy": "unlisted",
     "sdkVersion": "35.0.0",
     "platforms": [
       "ios",
@@ -35,6 +35,7 @@
     ],
     "ios": {
       "supportsTablet": true
-    }
+    },
+    "description": ""
   }
 }
