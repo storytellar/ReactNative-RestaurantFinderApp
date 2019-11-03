@@ -77,8 +77,8 @@ const S = StyleSheet.create({
         height: 80,
         elevation: 2,
         // borderRadius: 40,
-        borderTopRightRadius: 40,
-        borderTopLeftRadius: 40,
+        borderTopRightRadius: 20,
+        borderTopLeftRadius: 20,
         borderWidth: 1,
         borderColor: '#EAEAEA',
         backgroundColor: 'white'
@@ -109,7 +109,7 @@ const S = StyleSheet.create({
         height: 52,
         backgroundColor: "#E9895D",
         // paddingVertical: 10,
-        borderRadius: 26,
+        borderRadius: 18,
         borderColor: '#BEBEBE',
         borderWidth: 1,
     }

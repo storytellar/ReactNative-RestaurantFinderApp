@@ -5,6 +5,7 @@ import React, { useState } from 'react';
 import { Platform, StatusBar, StyleSheet, View } from 'react-native';
 
 import AppNavigator from './navigation/AppNavigator';
+import { getData } from "./controllers/account.controller";
 
 export default function App(props) {
   const [isLoadingComplete, setLoadingComplete] = useState(false);
@@ -28,6 +29,7 @@ export default function App(props) {
 }
 
 async function loadResourcesAsync() {
+  
   await Promise.all([
     Asset.loadAsync([
       require('./assets/images/DemoImage1.jpg'),
