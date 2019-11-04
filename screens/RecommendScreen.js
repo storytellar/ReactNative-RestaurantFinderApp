@@ -203,7 +203,8 @@ const styles = StyleSheet.create({
     marginLeft: windowWidth / 10 - 10
   },
   bigPhotoWrapper: {
-    padding: 10,
+    paddingVertical: 10,
+    paddingLeft: 10,
     shadowColor: "#333",
     shadowOffset: {
       width: -4,
@@ -215,13 +216,12 @@ const styles = StyleSheet.create({
     elevation: 10
   },
   bigPhoto: {
-    width: (9.1538461538 * windowWidth) / 12,
+    width: (9.5 * windowWidth) / 12,
     height: 180,
     resizeMode: "cover",
     borderRadius: 30,
     borderColor: "#979797",
     borderWidth: 1,
-    marginRight: 20
   },
   CategoryWrapper: {
     marginTop: 10,
