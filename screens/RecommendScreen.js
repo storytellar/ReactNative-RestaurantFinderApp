@@ -151,7 +151,7 @@ RecommendScreen.navigationOptions = {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center"
+    alignItems: "center",
   },
   containerScrollView: {
     alignItems: "center"
