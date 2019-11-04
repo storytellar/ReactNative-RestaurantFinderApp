@@ -79,15 +79,15 @@ const RecommendScreen = props => {
 
       <View style={styles.CategoryWrapper}>
         <Category
-          name="Drinks"
+          name="Drink"
           onPressButton={() => {
-            _storeData("@keyword","Drinks");
+            _storeData("@keyword","Drink");
             props.navigation.navigate("Search");
           }}
         />
-        <Category name="Drinks" 
+        <Category name="Food" 
             onPressButton={() => {
-            _storeData("@keyword","Eat");
+            _storeData("@keyword","Food");
             props.navigation.navigate("Search");
           }}
         />

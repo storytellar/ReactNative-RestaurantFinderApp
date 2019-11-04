@@ -22,7 +22,7 @@ const SearchScreen = props => {
     try {
       const value = await AsyncStorage.getItem(key);
       if (value !== null) {
-        onChangeText(value);
+        await onChangeText(value);
         await AsyncStorage.removeItem(key);
       }
     } catch (error) {}
@@ -31,6 +31,7 @@ const SearchScreen = props => {
   if (props.isFocused) {
     getKeyword("@keyword");
   }
+
 
   return (
     <SafeAreaView style={styles.container}>

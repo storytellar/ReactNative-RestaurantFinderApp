@@ -6,7 +6,9 @@ import {
   TouchableOpacity,
   StyleSheet,
   TextInput,
-  Dimensions
+  Dimensions,
+  ActivityIndicator,
+  KeyboardAvoidingView
 } from "react-native";
 
 import { newLogin } from "../controllers/account.controller";
@@ -20,55 +22,57 @@ const windowWidth = Dimensions.get("window").width;
 const LoginScreen = props => {
   const [id, onChangeID] = React.useState("");
   const [pass, onChangePass] = React.useState("");
-  
+  const [isClicked, setIsClicked] = React.useState(false);
 
   return (
     <SafeAreaView style={styles.container}>
-      <IconKey width={200} height={200} />
-
-      {/* TÀI KHOẢN */}
-      <View style={styles.searchBoxWrapper}>
-        <View style={styles.searchButton}>
-          <IconUser width={32} height={32} />
+      <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
+        <ActivityIndicator animating={isClicked} size="large" color="#aaa" />
+        <IconKey width={200} height={200} />
+        {/* TÀI KHOẢN */}
+        <View style={styles.searchBoxWrapper}>
+          <View style={styles.searchButton}>
+            <IconUser width={32} height={32} />
+          </View>
+          <TextInput
+            style={styles.input}
+            placeholder="Username"
+            onChangeID={text => onChangeID(text)}
+          />
         </View>
-        <TextInput
-          style={styles.input}
-          placeholder="Username"
-          onChangeID={text => onChangeID(text)}
-        />
-      </View>
 
-      {/* MẬT KHẨU */}
-      <View style={styles.searchBoxWrapper}>
-        <View style={styles.searchButton}>
-          <IconPass width={32} height={32} />
+        {/* MẬT KHẨU */}
+        <View style={styles.searchBoxWrapper}>
+          <View style={styles.searchButton}>
+            <IconPass width={32} height={32} />
+          </View>
+          <TextInput
+            secureTextEntry={true}
+            style={styles.input}
+            placeholder="Password"
+            onChangePass={text => onChangePass(text)}
+          />
         </View>
-        <TextInput
-          secureTextEntry={true}
-          style={styles.input}
-          placeholder="Password"
-          onChangePass={text => onChangePass(text)}
-        />
-      </View>
-
-      <TouchableOpacity
-        style={styles.loginButton}
-        onPress={() => {
-          newLogin(id, pass);
-          props.navigation.navigate("Recommend");
-        }}
-      >
-        <Text style={styles.buttonText}>Login</Text>
-      </TouchableOpacity>
-
-      <View style={{ flexDirection: "row", marginTop: 30 }}>
-        <Text style={{ fontSize: 16, color: "#888" }}>
-          Don't have an account?
-        </Text>
-        <TouchableOpacity onPress={() => props.navigation.navigate("SignUp")}>
-          <Text style={{ fontSize: 16, color: "#E9895D" }}> Register</Text>
+        <TouchableOpacity
+          style={isClicked ? styles.disableButton : styles.loginButton}
+          onPress={async () => {
+            await setIsClicked(true);
+            await newLogin(id, pass);
+            await props.navigation.navigate("Main");
+          }}
+        >
+          <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
-      </View>
+
+        <View style={{ flexDirection: "row", marginTop: 30 }}>
+          <Text style={{ fontSize: 16, color: "#888" }}>
+            Don't have an account?
+          </Text>
+          <TouchableOpacity onPress={() => props.navigation.navigate("SignUp")}>
+            <Text style={{ fontSize: 16, color: "#E9895D" }}> Signup</Text>
+          </TouchableOpacity>
+        </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
@@ -112,11 +116,20 @@ const styles = StyleSheet.create({
   loginButton: {
     marginTop: 30,
     backgroundColor: "#E9895D",
-    width: 200,
+    width: 0.82 * windowWidth,
     height: 52,
     alignItems: "center",
     justifyContent: "center",
-    borderRadius: 40
+    borderRadius: 18
+  },
+  disableButton: {
+    marginTop: 30,
+    backgroundColor: "#d5d5d5",
+    width: 0.82 * windowWidth,
+    height: 52,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 18
   },
   buttonText: {
     fontSize: 20,

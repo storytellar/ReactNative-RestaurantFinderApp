@@ -6,9 +6,9 @@ import posed from "react-native-pose";
 const windowWidth = Dimensions.get("window").width;
 const tabWidth = windowWidth / 2;
 const SpotLight = posed.View({
-    route0: { x: tabWidth/70},
-    route1: { x: tabWidth /2 + (tabWidth * 10 + 150) / 60 },
-    route2: { x: tabWidth + tabWidth /3 },
+    route0: { x: tabWidth/20},
+    route1: { x: tabWidth /2 + (tabWidth * 10 + 800) / 60 },
+    route2: { x: tabWidth + tabWidth /3 + tabWidth/15 },
 });
 
 
@@ -105,7 +105,7 @@ const S = StyleSheet.create({
         justifyContent: 'center',
     },
     spotLight: {
-        width: 0.32 * windowWidth,
+        width: 0.28 * windowWidth,
         height: 52,
         backgroundColor: "#E9895D",
         // paddingVertical: 10,
