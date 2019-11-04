@@ -2,11 +2,10 @@ import React from "react";
 import {
   View,
   StyleSheet,
-  Image,
   ScrollView,
   Dimensions,
-  TouchableOpacity,
-  AsyncStorage
+  AsyncStorage,
+  FlatList
 } from "react-native";
 import SafeAreaView from "react-native-safe-area-view";
 
@@ -27,155 +26,120 @@ const RecommendScreen = props => {
     } catch (error) {}
   };
 
-  // Quick VIEW for develop FRONT_END
-  // props.navigation.navigate("Search")
+  const items = [
+    {
+      title: "Đùi gà siêu giòn",
+      vote: 5.0,
+      shop: "Otoké Chicken",
+      isLove: true,
+      price: 30,
+      image: require("../assets/images/combosmall.jpg"),
+      onPressItem: () => goDetail()
+    },
+    {
+      title: "Cơm cánh gà rán",
+      vote: 5.0,
+      shop: "Otoké Chicken",
+      isLove: true,
+      price: 30,
+      image: require("../assets/images/DemoImage1.jpg"),
+      onPressItem: () => goDetail()
+    },
+    {
+      title: "Cơm cá phi lê",
+      vote: 5.0,
+      shop: "Otoké Chicken",
+      isLove: false,
+      price: 30,
+      image: require("../assets/images/comca.jpg"),
+      onPressItem: () => goDetail()
+    },
+    {
+      title: "Combo cơm trưa",
+      vote: 5.0,
+      shop: "Otoké Chicken",
+      isLove: true,
+      price: 30,
+      image: require("../assets/images/DemoImage1.jpg"),
+      onPressItem: () => goDetail()
+    },
+    {
+      title: "Cơm gà siêu cay",
+      vote: 5.0,
+      shop: "Otoké Chicken",
+      isLove: true,
+      price: 30,
+      image: require("../assets/images/combosmall.jpg"),
+      onPressItem: () => goDetail()
+    },
+  ];
 
   return (
     <SafeAreaView style={styles.container}>
-      <View>
-        <ScrollView
-          contentContainerStyle={styles.itemScroll}
-          showsVerticalScrollIndicator={false}
-        >
-          {/* List of banner */}
-          <View style={styles.bannerScrollWrapper}>
-            <ScrollView
-              contentContainerStyle={styles.bannerScroll}
-              horizontal={true}
-              showsHorizontalScrollIndicator={false}
-            >
-              <View style={{ width: windowWidth / 10 - 10 }}></View>
-              <Banner
-                onPressBanner={goDetail}
-                img={require("../assets/images/DemoImage1.jpg")}
-              />
-              <Banner
-                onPressBanner={goDetail}
-                img={require("../assets/images/DemoImage1.jpg")}
-              />
-              <Banner
-                onPressBanner={goDetail}
-                img={require("../assets/images/DemoImage1.jpg")}
-              />
-              <Banner
-                onPressBanner={goDetail}
-                img={require("../assets/images/DemoImage1.jpg")}
-              />
-              <Banner
-                onPressBanner={goDetail}
-                img={require("../assets/images/DemoImage1.jpg")}
-              />
-              <View style={{ width: windowWidth / 10 }}></View>
-            </ScrollView>
-          </View>
+      <ScrollView
+        contentContainerStyle={styles.containerScrollView}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* List of banner */}
+        <View style={styles.bannerScrollWrapper}>
+          <ScrollView
+            contentContainerStyle={styles.bannerScroll}
+            horizontal={true}
+            showsHorizontalScrollIndicator={false}
+          >
+            <View style={{ width: windowWidth / 10 - 10 }}></View>
+            <Banner
+              onPressBanner={goDetail}
+              img={require("../assets/images/banner.jpg")}
+            />
+            <Banner
+              onPressBanner={goDetail}
+              img={require("../assets/images/banner1.jpg")}
+            />
+            <Banner
+              onPressBanner={goDetail}
+              img={require("../assets/images/banner.jpg")}
+            />
+            <Banner
+              onPressBanner={goDetail}
+              img={require("../assets/images/banner1.jpg")}
+            />
 
-          {/* List of Category */}
-          <View style={styles.CategoryWrapper}>
-            <Category
-              name="Drink"
-              onPressButton={() => {
-                _storeData("@keyword", "Drink");
-                props.navigation.navigate("Search");
-              }}
-            />
-            <Category
-              name="Food"
-              onPressButton={() => {
-                _storeData("@keyword", "Food");
-                props.navigation.navigate("Search");
-              }}
-            />
-            <Category name="Drinks" />
-            <Category name="Drinks" />
-            <Category name="Drinks" />
-          </View>
+            <View style={{ width: windowWidth / 10 }}></View>
+          </ScrollView>
+        </View>
 
-          {/* List of items */}
-          <View>
-            <Item
-              title="Ice Cream Cupcake"
-              vote={4.9}
-              shop="Kem Baskin Robbins"
-              isLove={true}
-              price={30}
-              image={require("../assets/images/DemoImage1.jpg")}
-              onPressItem={() => goDetail()}
-            />
-            <Item
-              title="Ice Cream Cupcake"
-              vote={4.9}
-              shop="Kem Baskin Robbins"
-              isLove={true}
-              price={30}
-              image={require("../assets/images/DemoImage1.jpg")}
-              onPressItem={() => goDetail()}
-            />
-            <Item
-              title="Ice Cream Cupcake"
-              vote={4.9}
-              shop="Kem Baskin Robbins"
-              isLove={true}
-              price={30}
-              image={require("../assets/images/DemoImage1.jpg")}
-              onPressItem={() => goDetail()}
-            />
-            <Item
-              title="Ice Cream Cupcake"
-              vote={4.9}
-              shop="Kem Baskin Robbins"
-              isLove={true}
-              price={30}
-              image={require("../assets/images/DemoImage1.jpg")}
-              onPressItem={() => goDetail()}
-            />
-            <Item
-              title="Ice Cream Cupcake"
-              vote={4.9}
-              shop="Kem Baskin Robbins"
-              isLove={true}
-              price={30}
-              image={require("../assets/images/DemoImage1.jpg")}
-              onPressItem={() => goDetail()}
-            />
-            <Item
-              title="Ice Cream Cupcake"
-              vote={4.9}
-              shop="Kem Baskin Robbins"
-              isLove={true}
-              price={30}
-              image={require("../assets/images/DemoImage1.jpg")}
-              onPressItem={() => goDetail()}
-            />
-            <Item
-              title="Ice Cream Cupcake"
-              vote={4.9}
-              shop="Kem Baskin Robbins"
-              isLove={true}
-              price={30}
-              image={require("../assets/images/DemoImage1.jpg")}
-              onPressItem={() => goDetail()}
-            />
-            <Item
-              title="Ice Cream Cupcake"
-              vote={4.9}
-              shop="Kem Baskin Robbins"
-              isLove={true}
-              price={30}
-              image={require("../assets/images/DemoImage1.jpg")}
-              onPressItem={() => goDetail()}
-            />
-            <Item
-              title="Ice Cream Cupcake"
-              vote={4.9}
-              shop="Kem Baskin Robbins"
-              isLove={true}
-              price={30}
-              image={require("../assets/images/DemoImage1.jpg")}
-              onPressItem={() => goDetail()}
-            />
-          </View>
-        </ScrollView>
-      </View>
+        {/* List of Category */}
+        <View style={styles.CategoryWrapper}>
+          <Category
+            name="Drink"
+            onPressButton={() => {
+              _storeData("@keyword", "Drink");
+              props.navigation.navigate("Search");
+            }}
+          />
+          <Category
+            name="Food"
+            onPressButton={() => {
+              _storeData("@keyword", "Food");
+              props.navigation.navigate("Search");
+            }}
+          />
+          <Category name="Drinks" />
+          <Category name="Drinks" />
+          <Category name="Drinks" />
+        </View>
+
+        {/* List of items */}
+        <FlatList
+          contentContainerStyle={{paddingHorizontal: 15,}}
+          data={items}
+          renderItem={({ item }) => (
+            <Item title={item.title} vote={item.vote} shop={item.shop} isLove={item.isLove} price={item.price} image={item.image} onPressItem={item.onPressItem}/>
+          )}
+          keyExtractor={item => item.title}
+        />
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -189,31 +153,12 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center"
   },
+  containerScrollView: {
+    alignItems: "center"
+  },
   bannerScrollWrapper: {
-    // backgroundColor: 'red',
     height: 200,
     marginTop: 20
-  },
-  bigPhotoWrapper: {
-    paddingVertical: 10,
-    paddingLeft: 10,
-    shadowColor: "#333",
-    shadowOffset: {
-      width: -4,
-      height: 3
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3,
-
-    elevation: 10
-  },
-  bigPhoto: {
-    width: (9.5 * windowWidth) / 12,
-    height: 180,
-    resizeMode: "cover",
-    borderRadius: 30,
-    borderColor: "#979797",
-    borderWidth: 1
   },
   CategoryWrapper: {
     marginTop: 10,
@@ -221,9 +166,6 @@ const styles = StyleSheet.create({
     height: 85,
     flexDirection: "row",
     justifyContent: "space-between"
-  },
-  itemScroll: {
-    alignItems: "center"
   }
 });
 
