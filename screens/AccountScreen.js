@@ -16,19 +16,15 @@ const AccountScreen = props => {
     console.log(userData);
   }
   return (
-    <View>
-      <Text>AccountScreen</Text>
-      <Text>TêN: {userData.name}</Text>
+    <View style={{alignItems: 'center', justifyContent: 'center'}}>
+      <Text>{userData.name}</Text>
       <TouchableOpacity
         onPress={async () => {
           await logout();
           props.navigation.navigate("Login");
         }}
       >
-        <Text>Click me to log out</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => props.navigation.navigate("Signup")}>
-        <Text>Click me to signup</Text>
+        <Text style={{fontSize: 20, color: '#69E384', padding: 20, borderRadius: 10, backgroundColor: '#FADD79'}}>Log out</Text>
       </TouchableOpacity>
     </View>
   );
