@@ -7,8 +7,11 @@ import {
   StyleSheet,
   TextInput,
   Dimensions,
-  KeyboardAvoidingView
+  KeyboardAvoidingView,
+  ActivityIndicator
 } from "react-native";
+
+import { newLogin, newSignup } from "../controllers/account.controller";
 
 import IconUser from "../assets/svg/user.svg";
 import IconPass from "../assets/svg/pass.svg";
@@ -17,7 +20,7 @@ import IconSignup from "../assets/svg/signup.svg";
 const windowWidth = Dimensions.get("window").width;
 
 const SignupScreen = props => {
-
+  const [errorSignup, setErrorSignup] = React.useState(false);
   const [id, onChangeID] = React.useState("");
   const [pass, onChangePass] = React.useState("");
   const [isClicked, setIsClicked] = React.useState(false);
@@ -25,7 +28,9 @@ const SignupScreen = props => {
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
+        <ActivityIndicator animating={isClicked} size="large" color="#aaa" />
         <IconSignup width={200} height={200} />
+        <Text>{errorSignup ? "👉Please enter another username" : ""}</Text>
 
         {/* TÀI KHOẢN */}
         <View style={styles.searchBoxWrapper}>
@@ -35,7 +40,7 @@ const SignupScreen = props => {
           <TextInput
             style={styles.input}
             placeholder="New username"
-            onChangeID={text => onChangeID(text)}
+            onChangeText={text => onChangeID(text)}
           />
         </View>
 
@@ -48,13 +53,26 @@ const SignupScreen = props => {
             secureTextEntry={true}
             style={styles.input}
             placeholder="New password"
-            onChangePass={text => onChangePass(text)}
+            onChangeText={text => onChangePass(text)}
           />
         </View>
 
         <TouchableOpacity
-          style={styles.loginButton}
-          onPress={() => props.navigation.navigate("Login")}
+          style={isClicked ? styles.disableButton : styles.loginButton}
+          onPress={async () => {
+            await setIsClicked(true);
+            if (await newSignup(id, pass)) {
+              if (await newLogin(id, pass)){
+              await props.navigation.navigate("Main");
+            }
+            } else {
+              await setErrorSignup(true);
+              setTimeout(function() {
+                setErrorSignup(false);
+              }, 3000);
+              await setIsClicked(false);
+            }
+          }}
         >
           <Text style={styles.buttonText}>Signup</Text>
         </TouchableOpacity>
@@ -119,6 +137,15 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     color: "white"
+  },
+  disableButton: {
+    marginTop: 30,
+    backgroundColor: "#d5d5d5",
+    width: 0.82 * windowWidth,
+    height: 52,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 18
   }
 });
 

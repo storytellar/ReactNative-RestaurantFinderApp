@@ -20,6 +20,7 @@ import IconKey from "../assets/svg/key.svg";
 const windowWidth = Dimensions.get("window").width;
 
 const LoginScreen = props => {
+  const [errorLogin, setErrorLogin] = React.useState(false);
   const [id, onChangeID] = React.useState("");
   const [pass, onChangePass] = React.useState("");
   const [isClicked, setIsClicked] = React.useState(false);
@@ -29,6 +30,7 @@ const LoginScreen = props => {
       <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
         <ActivityIndicator animating={isClicked} size="large" color="#aaa" />
         <IconKey width={200} height={200} />
+        <Text>{errorLogin ? "🥵 Something's wronggg !!!": "" }</Text>
         {/* TÀI KHOẢN */}
         <View style={styles.searchBoxWrapper}>
           <View style={styles.searchButton}>
@@ -37,7 +39,7 @@ const LoginScreen = props => {
           <TextInput
             style={styles.input}
             placeholder="Username"
-            onChangeID={text => onChangeID(text)}
+            onChangeText={text => onChangeID(text)}
           />
         </View>
 
@@ -50,15 +52,22 @@ const LoginScreen = props => {
             secureTextEntry={true}
             style={styles.input}
             placeholder="Password"
-            onChangePass={text => onChangePass(text)}
+            onChangeText={text => onChangePass(text)}
           />
         </View>
         <TouchableOpacity
           style={isClicked ? styles.disableButton : styles.loginButton}
           onPress={async () => {
             await setIsClicked(true);
-            await newLogin(id, pass);
-            await props.navigation.navigate("Main");
+            if (await newLogin(id, pass)){
+              await props.navigation.navigate("Main");
+            }
+            else{
+              await setErrorLogin(true);
+              setTimeout(function(){ setErrorLogin(false) }, 3000);
+              await setIsClicked(false);
+            }
+            
           }}
         >
           <Text style={styles.buttonText}>Login</Text>

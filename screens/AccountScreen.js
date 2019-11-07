@@ -4,7 +4,7 @@ import { View, Text, TouchableOpacity,  } from "react-native";
 import { logout, getData } from "../controllers/account.controller";
 
 const AccountScreen = props => {
-  const [userData, setUserData] = React.useState('');
+  const [token, setToken] = React.useState('');
 
   React.useEffect(() => {
     getdatadata();
@@ -12,12 +12,12 @@ const AccountScreen = props => {
 
   const getdatadata = async () => {
     var data = await getData();
-    setUserData(JSON.parse(data));
-    console.log(userData);
+    setToken(JSON.parse(data).token);
+    console.log(token);
   }
   return (
     <View style={{alignItems: 'center', justifyContent: 'center'}}>
-      <Text>{userData.name}</Text>
+      <Text>TOKEN : {token}</Text>
       <TouchableOpacity
         onPress={async () => {
           await logout();
