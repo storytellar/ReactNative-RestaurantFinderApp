@@ -13,9 +13,10 @@ const getData = async () => {
   }
 };
 
+// Trả về token
 const newLogin = async (id, pass) => {
   var res = await fetch(
-    "https://r20jn2z79d.execute-api.us-east-1.amazonaws.com/dev/login",
+    "https://a8aeksd7j1.execute-api.us-east-2.amazonaws.com/dev/login",
     {
       method: "POST",
       headers: {
@@ -32,7 +33,7 @@ const newLogin = async (id, pass) => {
     }
   );
   var resData = await res.json();
-
+    debugger
   if (resData.data.token){
     // Nếu đăng nhập thành công
     var data = {
@@ -49,7 +50,7 @@ const newLogin = async (id, pass) => {
 
 const newSignup = async (id, pass) => {
   var res = await fetch(
-    "https://r20jn2z79d.execute-api.us-east-1.amazonaws.com/dev/register",
+    "https://a8aeksd7j1.execute-api.us-east-2.amazonaws.com/dev/register",
     {
       method: "POST",
       headers: {

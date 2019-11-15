@@ -23,47 +23,33 @@ const DetailScreen = props => {
   const items = [
     {
       title: "Đùi gà siêu giòn",
-      vote: 5.0,
-      shop: "Otoké Chicken",
-      isLove: true,
+      isBestSeller: true,
       price: 30,
       image: require("../assets/images/combosmall.jpg")
     },
     {
       title: "Cơm cánh gà rán",
-      vote: 5.0,
-      shop: "Otoké Chicken",
-      isLove: true,
+      isBestSeller: true,
       price: 30,
-      image: require("../assets/images/DemoImage1.jpg"),
-      
+      image: require("../assets/images/DemoImage1.jpg")
     },
     {
       title: "Cơm cá phi lê",
-      vote: 5.0,
-      shop: "Otoké Chicken",
-      isLove: false,
+      isBestSeller: false,
       price: 30,
-      image: require("../assets/images/comca.jpg"),
-      
+      image: require("../assets/images/comca.jpg")
     },
     {
       title: "Combo cơm trưa",
-      vote: 5.0,
-      shop: "Otoké Chicken",
-      isLove: true,
+      isBestSeller: false,
       price: 30,
-      image: require("../assets/images/DemoImage1.jpg"),
-      
+      image: require("../assets/images/DemoImage1.jpg")
     },
     {
       title: "Cơm gà siêu cay",
-      vote: 5.0,
-      shop: "Otoké Chicken",
-      isLove: true,
+      isBestSeller: false,
       price: 30,
-      image: require("../assets/images/combosmall.jpg"),
-      
+      image: require("../assets/images/combosmall.jpg")
     }
   ];
 
@@ -84,7 +70,7 @@ const DetailScreen = props => {
           <IconHeart
             width={36}
             height={36}
-            fill={props.isLove ? "#F66767" : "#545454"}
+            fill={props.isBestSeller ? "#F66767" : "#545454"}
           />
         </View>
         <View style={styles.shopMainInfo}>
@@ -94,7 +80,7 @@ const DetailScreen = props => {
               <IconCheckin width={26} height={26} fill={"#D8B05E"} />
               <Text style={styles.miniText}>Quận 5, TP. Hồ Chí Minh</Text>
             </View>
-            <View style={[styles.rowDirection, {paddingTop: 5}]}>
+            <View style={[styles.rowDirection, { paddingTop: 5 }]}>
               <IconOffer width={26} height={26} fill={"#D8B05E"} />
               <Text style={styles.miniText}>Hoàn tiền 10% từ MOMO</Text>
             </View>
@@ -118,7 +104,7 @@ const DetailScreen = props => {
                   title={item.title}
                   vote={item.vote}
                   shop={item.shop}
-                  isLove={item.isLove}
+                  isBestSeller={item.isBestSeller}
                   price={item.price}
                   image={item.image}
                   onPressItem={item.onPressItem}
@@ -126,7 +112,7 @@ const DetailScreen = props => {
               )}
               keyExtractor={item => item.title}
             />
-           </ScrollView>
+          </ScrollView>
         </View>
       </View>
 
@@ -188,11 +174,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     justifyContent: "space-between",
     borderBottomWidth: 1,
-    borderBottomColor: '#bbb',
-    paddingBottom: 15,
+    borderBottomColor: "#bbb",
+    paddingBottom: 15
   },
   shopAdditionalInfo: {
-    flex: 0.87,
+    flex: 0.87
   },
   description: {
     fontSize: 16,

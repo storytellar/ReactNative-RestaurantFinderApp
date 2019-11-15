@@ -8,25 +8,29 @@ import {
   Dimensions
 } from "react-native";
 
-import IconAward from "../assets/svg/award.svg";
+import IconShop from "../assets/svg/shop.svg";
+import IconHeart from "../assets/svg/heart.svg";
+import IconStar from "../assets/svg/star.svg";
 
 const windowWidth = Dimensions.get("window").width;
 
-const Item = props => {
-  const { title, isBestSeller, price, image } = props;
+const Shop = props => {
+  const { vote, shop, isLove, price, image, onPressItem } = props;
   return (
     <View style={styles.border}>
+      <TouchableOpacity onPress={onPressItem}>
         <View style={styles.container}>
           <View style={styles.mainInfo}>
             <View style={styles.itemPhoto}>
               <Image style={styles.image} source={image} />
             </View>
             <View style={styles.midInfo}>
-              <View>
-                <Text style={styles.itemTitle}>{title}</Text>
+              <View style={styles.itemShop}>
+                <IconShop width={25} height={22} fill={"#3C3D46"} />
+                <Text style={styles.itemTitle}>{" " + shop}</Text>
               </View>
               <View style={styles.itemVote}>
-                {/* <View style={{ flexDirection: "row" }}>
+                <View style={{ flexDirection: "row" }}>
                   <View>
                     <IconStar width={14} height={14} />
                   </View>
@@ -43,23 +47,27 @@ const Item = props => {
                     <IconStar width={14} height={14} />
                   </View>
                   <Text style={{ paddingLeft: 5, fontSize: 14 }}>{vote}</Text>
-                </View> */}
+                </View>
               </View>
               <View style={styles.itemShop}>
-                {/* <IconShop width={25} height={22} fill={"#8B8B8B"} /> */}
-                <Text style={styles.price}>{price + ".000 VND"}</Text>
+                <Text style={styles.shopName}>About 3.0 km</Text>
               </View>
             </View>
           </View>
           <View style={styles.rightInfo}>
-            {isBestSeller ? (
-              <View style={{ color: "black" }}>
-                <IconAward width={32} height={32} />
-              </View>
-            ) : null}
+            <View>
+              <IconHeart
+                width={25}
+                height={22}
+                fill={isLove ? "#F66767" : "#B9B9B9"}
+              />
+            </View>
+            <View>
+              <Text style={styles.price}>{price}k</Text>
+            </View>
           </View>
         </View>
-      
+      </TouchableOpacity>
     </View>
   );
 };
@@ -111,6 +119,7 @@ const styles = StyleSheet.create({
     color: "#3C3D47"
   },
   itemVote: {
+    paddingLeft: 3,
     paddingVertical: 4
   },
   itemShop: {
@@ -134,7 +143,7 @@ const styles = StyleSheet.create({
   },
   rightInfo: {
     height: 70,
-    justifyContent: "center"
+    justifyContent: "space-between"
   },
   price: {
     fontSize: 14,
@@ -142,4 +151,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default Item;
+export default Shop;

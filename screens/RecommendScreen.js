@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import SafeAreaView from "react-native-safe-area-view";
 
-import Item from "../components/Item";
+import Shop from "../components/Shop";
 import Category from "../components/Category";
 import Banner from "../components/Banner";
 
@@ -26,7 +26,7 @@ const RecommendScreen = props => {
     } catch (error) {}
   };
 
-  const items = [
+  const shops = [
     {
       title: "Đùi gà siêu giòn",
       vote: 5.0,
@@ -130,12 +130,12 @@ const RecommendScreen = props => {
           <Category name="Drinks" />
         </View>
 
-        {/* List of items */}
+        {/* List of Shops */}
         <FlatList
           contentContainerStyle={{paddingHorizontal: 15,}}
-          data={items}
+          data={shops}
           renderItem={({ item }) => (
-            <Item title={item.title} vote={item.vote} shop={item.shop} isLove={item.isLove} price={item.price} image={item.image} onPressItem={item.onPressItem}/>
+            <Shop title={item.title} vote={item.vote} shop={item.shop} isLove={item.isLove} price={item.price} image={item.image} onPressItem={item.onPressItem}/>
           )}
           keyExtractor={item => item.title}
         />
@@ -152,6 +152,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
+    backgroundColor: '#FFFCFA'
   },
   containerScrollView: {
     alignItems: "center"

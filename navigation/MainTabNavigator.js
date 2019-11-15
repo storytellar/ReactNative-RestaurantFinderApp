@@ -11,6 +11,9 @@ import RecommendScreen from "../screens/RecommendScreen";
 import SearchScreen from "../screens/SearchScreen";
 import DetailScreen from "../screens/DetailScreen.js";
 import AccountScreen from "../screens/AccountScreen.js";
+import EditInfoAccountScreen from "../screens/EditInfoAccountScreen.js";
+import FavoriteScreen from "../screens/FavoriteScreen.js";
+import ConcernScreen from "../screens/ConcernScreen.js";
 
 import IconHome from "../assets/svg/home.svg";
 import IconSearch from "../assets/svg/search.svg";
@@ -77,6 +80,9 @@ SearchStack.path = "";
 const AccountStack = createStackNavigator(
   {
     Account: AccountScreen,
+    EditInfo: EditInfoAccountScreen,
+    Favorite: FavoriteScreen,
+    Concern: ConcernScreen,
   },
   config
 );
