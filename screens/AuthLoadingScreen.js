@@ -1,6 +1,6 @@
 import React from "react";
 import { View } from "react-native";
-import { getData } from "../controllers/account.controller";
+import { getLocalData } from "../controllers/account.controller";
 
 class AuthLoadingScreen extends React.Component {
   constructor(props) {
@@ -10,7 +10,7 @@ class AuthLoadingScreen extends React.Component {
   
   
   _bootstrapAsync = async () => {
-    loginData = await getData();
+    loginData = await getLocalData();
     this.props.navigation.navigate(loginData ? "Recommend" : "Login");
     // Quick develop Front-end
     this.props.navigation.navigate("Account");

@@ -42,7 +42,7 @@ RecommendStack.navigationOptions = ({ navigation }) => {
   return {
     tabBarLabel: "Today",
     tabBarIcon: ({ focused }) => (
-      <IconHome height={31} width={31} fill={focused ? "#FFF" : "#C5C5C5"} />
+      <IconHome height={focused ? 31 : 44} width={focused ? 31 : 44} fill={focused ? "#FFF" : "#C5C5C5"} />
     )
   };
 };

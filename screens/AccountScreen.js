@@ -4,10 +4,11 @@ import {
   Text,
   TouchableOpacity,
   Dimensions,
-  StyleSheet
+  StyleSheet,
+  ActivityIndicator
 } from "react-native";
 
-import { logout, getData } from "../controllers/account.controller";
+import { logout, getLocalData } from "../controllers/account.controller";
 
 import IconMale from "../assets/svg/male.svg";
 import IconUser from "../assets/svg/user.svg";
@@ -19,19 +20,23 @@ import IconMore from "../assets/svg/more.svg";
 const windowWidth = Dimensions.get("window").width;
 
 const AccountScreen = props => {
-  const [token, setToken] = React.useState("");
+  const [localAccountInfo, setLocalAccountInfo] = React.useState({});
+  const [nameValue, onChangeName] = React.useState("");
+  const [cityValue, onChangeCity] = React.useState("");
 
   React.useEffect(() => {
-    getdatadata();
+    getAccountData();
   }, []);
 
-  const getdatadata = async () => {
-    var data = await getData();
-    setToken(JSON.parse(data).token);
-    console.log(token);
+  const getAccountData = async () => {
+    var data = await getLocalData();
+    data  = JSON.parse(data);
+    setLocalAccountInfo(data);
+    onChangeName(data ? (data.info.name ? data.info.name : data.info.username) : "username");
+    onChangeCity(data.info.city ? data.info.city : "City: Unknown");
   };
 
-  console.log(token);
+  console.log("VÀO TAB ACCOUNT:", localAccountInfo);
 
   return (
     <View style={{ flex: 1, alignItems: "center" }}>
@@ -54,7 +59,7 @@ const AccountScreen = props => {
               color: "#3C3D46"
             }}
           >
-            Lê Hồng Thái
+            {nameValue}
           </Text>
           <Text
             style={{
@@ -63,7 +68,7 @@ const AccountScreen = props => {
               color: "#3C3D46"
             }}
           >
-            TP. Hồ Chí Minh
+            {cityValue}
           </Text>
         </View>
       </View>

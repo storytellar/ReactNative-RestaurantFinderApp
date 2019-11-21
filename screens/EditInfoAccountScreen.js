@@ -7,19 +7,52 @@ import {
   SafeAreaView,
   Dimensions,
   TouchableOpacity,
-  KeyboardAvoidingView
+  KeyboardAvoidingView,
+  ActivityIndicator
 } from "react-native";
 
+import { getLocalData, saveProfile } from "../controllers/account.controller";
 
 const windowWidth = Dimensions.get("window").width;
 
 const EditInfoAccountScreen = props => {
+  const [loading, setLoading] = React.useState(true);
+  const [localAccountInfo, setLocalAccountInfo] = React.useState({
+    info: { name: "" }
+  });
+
   const [nameValue, onChangeName] = React.useState("");
   const [genderValue, onChangeGender] = React.useState("");
   const [ageValue, onChangeAge] = React.useState("");
   const [jobValue, onChangeJob] = React.useState("");
   const [cityValue, onChangeCity] = React.useState("");
   const [incomeValue, onChangeIncome] = React.useState("");
+
+  const getAccountData = async () => {
+    setLoading(true);
+    var data = await getLocalData();
+    data = JSON.parse(data);
+    setLocalAccountInfo(data);
+    onChangeName(data.info.name);
+    onChangeGender(data.info.gender);
+    onChangeAge(String(data.info.age));
+    onChangeJob(data.info.job);
+    onChangeCity(data.info.city);
+    onChangeIncome(data.info.salary_range);
+    setLoading(false);
+  };
+
+  React.useEffect(() => {
+    getAccountData();
+  }, []);
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" loading={loading} />
+      </View>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -31,7 +64,7 @@ const EditInfoAccountScreen = props => {
           marginRight: 10
         }}
       >
-       PROFILE 
+        ABOUT ME
       </Text>
       <KeyboardAvoidingView
         style={styles.inputWrapper}
@@ -108,10 +141,24 @@ const EditInfoAccountScreen = props => {
       </KeyboardAvoidingView>
 
       <View style={styles.buttonWrapper}>
-        <TouchableOpacity onPress={() => props.navigation.navigate('Account')}>
+        <TouchableOpacity onPress={() => props.navigation.navigate("Account")}>
           <Text style={styles.skipText}>Skip</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.submitButton}>
+        <TouchableOpacity
+          style={styles.submitButton}
+          onPress={() => {
+            saveProfile(localAccountInfo.token, {
+              nameValue,
+              genderValue,
+              ageValue,
+              jobValue,
+              cityValue,
+              incomeValue,
+              username: localAccountInfo.info.username
+            });
+            props.navigation.navigate("Account");
+          }}
+        >
           <Text style={styles.submitText}>Save</Text>
         </TouchableOpacity>
       </View>
@@ -184,7 +231,6 @@ const styles = StyleSheet.create({
     color: "#b5534b",
     fontWeight: "300",
     marginRight: 10,
-
 
     shadowColor: "#D8BCA8",
     shadowOffset: {
