@@ -7,6 +7,7 @@ import {
   StyleSheet,
   ActivityIndicator
 } from "react-native";
+import { withNavigationFocus } from "react-navigation";
 
 import { logout, getLocalData } from "../controllers/account.controller";
 
@@ -20,26 +21,24 @@ import IconMore from "../assets/svg/more.svg";
 const windowWidth = Dimensions.get("window").width;
 
 const AccountScreen = props => {
-  const [localAccountInfo, setLocalAccountInfo] = React.useState({});
   const [nameValue, onChangeName] = React.useState("");
   const [cityValue, onChangeCity] = React.useState("");
 
   React.useEffect(() => {
     getAccountData();
-  }, []);
+  }, [getLocalData()]);
 
   const getAccountData = async () => {
-    var data = await getLocalData();
-    data  = JSON.parse(data);
-    setLocalAccountInfo(data);
-    onChangeName(data ? (data.info.name ? data.info.name : data.info.username) : "username");
+    data = await getLocalData();
+    data = JSON.parse(data);
+    onChangeName(
+      data ? (data.info.name ? data.info.name : data.info.username) : "username"
+    );
     onChangeCity(data.info.city ? data.info.city : "City: Unknown");
   };
 
-  console.log("VÀO TAB ACCOUNT:", localAccountInfo);
-
   return (
-    <View style={{ flex: 1, alignItems: "center" }}>
+    <View style={{ flex: 1, alignItems: "center"}}>
       <View
         style={{
           flex: 0.4,
@@ -59,7 +58,7 @@ const AccountScreen = props => {
               color: "#3C3D46"
             }}
           >
-            {nameValue}
+            {props.navigation.getParam('name') ? props.navigation.getParam('name') : nameValue}
           </Text>
           <Text
             style={{
@@ -68,7 +67,7 @@ const AccountScreen = props => {
               color: "#3C3D46"
             }}
           >
-            {cityValue}
+            {props.navigation.getParam('city') ? props.navigation.getParam('city') : cityValue}
           </Text>
         </View>
       </View>
@@ -96,21 +95,6 @@ const AccountScreen = props => {
           <View style={{ flexDirection: "row" }}>
             <IconUser width={26} height={26} />
             <Text style={styles.menuTxt}>Profile</Text>
-          </View>
-          <View style={{ marginRight: 10 }}>
-            <IconMore width={26} height={26} />
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.menuBtn]}
-          onPress={async () => {
-            props.navigation.navigate("Favorite");
-          }}
-        >
-          <View style={{ flexDirection: "row" }}>
-            <IconLoveBox width={26} height={28} />
-            <Text style={styles.menuTxt}>Favorite</Text>
           </View>
           <View style={{ marginRight: 10 }}>
             <IconMore width={26} height={26} />
@@ -182,4 +166,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default AccountScreen;
+export default withNavigationFocus(AccountScreen);

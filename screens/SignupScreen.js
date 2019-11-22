@@ -63,7 +63,7 @@ const SignupScreen = props => {
             await setIsClicked(true);
             if (await newSignup(id, pass)) {
               if (await newLogin(id, pass)){
-              await props.navigation.navigate("Main");
+              await props.navigation.navigate("FirstConcern");
             }
             } else {
               await setErrorSignup(true);

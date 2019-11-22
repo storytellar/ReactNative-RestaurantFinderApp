@@ -8,12 +8,11 @@ class AuthLoadingScreen extends React.Component {
     this._bootstrapAsync();
   }
   
-  
   _bootstrapAsync = async () => {
     loginData = await getLocalData();
     this.props.navigation.navigate(loginData ? "Recommend" : "Login");
     // Quick develop Front-end
-    this.props.navigation.navigate("Account");
+    // this.props.navigation.navigate("Concern");
   };
 
   render() {

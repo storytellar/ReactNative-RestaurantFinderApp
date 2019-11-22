@@ -39,7 +39,7 @@ const saveProfile = async (token, info) => {
 
   if (resData.statusCode === 200) {
     // Nếu save profile thành công
-    getProfile(token)
+    await getProfile(token)
   }
 };
 
@@ -142,4 +142,4 @@ const logout = async () => {
   } catch (error) {}
 };
 
-export { getLocalData, newLogin, newSignup, logout, saveProfile };
+export { getLocalData, newLogin, newSignup, logout, saveProfile, getProfile };

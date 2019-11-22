@@ -7,6 +7,7 @@ import MainTabNavigator from './MainTabNavigator';
 import LoginScreen from '../screens/LoginScreen';
 import SignupScreen from '../screens/SignupScreen';
 import AuthLoadingScreen from '../screens/AuthLoadingScreen';
+import FirstConcernScreen from '../screens/FirstConcernScreen';
 
 export default createAppContainer(
   createAnimatedSwitchNavigator({
@@ -16,7 +17,7 @@ export default createAppContainer(
     Login: LoginScreen,
     Main: MainTabNavigator,
     SignUp: SignupScreen,
-    // Detail: DetailsScreen,
+    FirstConcern: FirstConcernScreen
   },
   {
     initialRouteName: 'AuthLoading',

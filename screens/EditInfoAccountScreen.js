@@ -11,7 +11,7 @@ import {
   ActivityIndicator
 } from "react-native";
 
-import { getLocalData, saveProfile } from "../controllers/account.controller";
+import { getLocalData, saveProfile , getProfile} from "../controllers/account.controller";
 
 const windowWidth = Dimensions.get("window").width;
 
@@ -35,10 +35,10 @@ const EditInfoAccountScreen = props => {
     setLocalAccountInfo(data);
     onChangeName(data.info.name);
     onChangeGender(data.info.gender);
-    onChangeAge(String(data.info.age));
+    onChangeAge(String(data.info.age) === "null" ? "" : String(data.info.age));
     onChangeJob(data.info.job);
     onChangeCity(data.info.city);
-    onChangeIncome(data.info.salary_range);
+    onChangeIncome(String(data.info.salary_range) === "null" ? "" : String(data.info.salary_range));
     setLoading(false);
   };
 
@@ -146,8 +146,8 @@ const EditInfoAccountScreen = props => {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.submitButton}
-          onPress={() => {
-            saveProfile(localAccountInfo.token, {
+          onPress={ async () => {
+             saveProfile(localAccountInfo.token, {
               nameValue,
               genderValue,
               ageValue,
@@ -156,7 +156,7 @@ const EditInfoAccountScreen = props => {
               incomeValue,
               username: localAccountInfo.info.username
             });
-            props.navigation.navigate("Account");
+            props.navigation.navigate("Account", {name : nameValue, city: cityValue});
           }}
         >
           <Text style={styles.submitText}>Save</Text>

@@ -6,11 +6,10 @@ import {
   Dimensions,
   TouchableOpacity
 } from "react-native";
-import { setRecoveryProps } from "expo/build/ErrorRecovery/ErrorRecovery";
 
 const windowWidth = Dimensions.get("window").width;
 
-const ConcernScreen = (props) => {
+const FirstConcernScreen = (props) => {
   const [isCoffee, setCoffee] = React.useState(false);
   const [isBuffet, setBuffet] = React.useState(false);
   const [isVegetarian, setVegetarian] = React.useState(false);
@@ -80,8 +79,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#FFFCFA"
+    alignItems: "center"
   },
   button: {
     paddingVertical: 15,
@@ -120,8 +118,8 @@ const styles = StyleSheet.create({
   }
 });
 
-ConcernScreen.navigationOptions = {
+FirstConcernScreen.navigationOptions = {
   header: null
 };
 
-export default ConcernScreen;
+export default FirstConcernScreen;

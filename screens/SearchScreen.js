@@ -10,12 +10,34 @@ import {
   AsyncStorage
 } from "react-native";
 import { withNavigationFocus } from "react-navigation";
+import * as Location from "expo-location";
+import * as Permissions from "expo-permissions";
 
 import IconSearch from "../assets/svg/search.svg";
 
 const windowWidth = Dimensions.get("window").width;
 
 const SearchScreen = props => {
+  const [location, setLocation] = React.useState({latitude: 0, longitude: 0});
+  const [errorLocation, setErrorLocation] = React.useState("");
+
+  React.useEffect(() => {
+    _getLocationAsync();
+  }, []);
+  
+  _getLocationAsync = async () => {
+    let { status } = await Permissions.askAsync(Permissions.LOCATION);
+    if (status !== "granted") {
+      setErrorLocation("Permission to access location was denied");
+    }
+    let location = await Location.getCurrentPositionAsync({});
+    setLocation(location.coords);
+  };
+
+  if (location.latitude)
+    console.log(`Lat: ${location.latitude} | Long: ${location.longitude}`);
+    
+
   const [value, onChangeText] = React.useState("");
 
   const getKeyword = async key => {

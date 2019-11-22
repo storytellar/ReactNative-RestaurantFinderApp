@@ -8,6 +8,7 @@ import {
   Dimensions,
   FlatList
 } from "react-native";
+import { Linking } from "expo";
 
 import IconHeart from "../assets/svg/heart.svg";
 import IconLeft from "../assets/svg/left.svg";
@@ -67,11 +68,17 @@ const DetailScreen = props => {
       <View style={styles.InfoBox}>
         {/* FavoriteBox */}
         <View style={styles.FavoriteBox}>
-          <IconHeart
-            width={36}
-            height={36}
-            fill={props.isBestSeller ? "#F66767" : "#545454"}
-          />
+          <TouchableOpacity
+            onPress={() => {
+              alert("Thả tim");
+            }}
+          >
+            <IconHeart
+              width={36}
+              height={36}
+              fill={props.isBestSeller ? "#F66767" : "#545454"}
+            />
+          </TouchableOpacity>
         </View>
         <View style={styles.shopMainInfo}>
           <Text style={styles.ShopName}>Otoké Chicken</Text>
@@ -127,7 +134,13 @@ const DetailScreen = props => {
 
       {/* OrderButtonBox */}
       <View style={styles.OrderButtonBox}>
-        <TouchableOpacity onPress={() => alert("Call 19001009")}>
+        <TouchableOpacity
+          onPress={() => {
+            var s = "Trà Sữa";
+            var phone ="1900" + (s.charCodeAt(0) + s.charCodeAt(1)) + (s.charCodeAt(0) % 10);
+            Linking.openURL(`tel:${phone}`);
+          }}
+        >
           <Text style={{ color: "white", fontSize: 22, fontWeight: "bold" }}>
             Table now !
           </Text>
@@ -148,7 +161,7 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     width: "100%",
-    height: "25%"
+    height: "50%"
   },
   bigPhoto: {
     width: "100%",
@@ -161,7 +174,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     width: "100%",
-    height: "80%",
+    height: "60%",
     backgroundColor: "white",
     borderTopLeftRadius: 40,
     borderTopRightRadius: 40,
@@ -173,7 +186,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 30,
     paddingHorizontal: 20,
     justifyContent: "space-between",
-    borderBottomWidth: 1,
+    // borderBottomWidth: 1,
     borderBottomColor: "#bbb",
     paddingBottom: 15
   },
