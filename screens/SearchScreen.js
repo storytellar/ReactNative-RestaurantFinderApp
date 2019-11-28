@@ -7,24 +7,29 @@ import {
   SafeAreaView,
   Dimensions,
   TouchableOpacity,
-  AsyncStorage
+  AsyncStorage,
+  FlatList,
+  ActivityIndicator
 } from "react-native";
 import { withNavigationFocus } from "react-navigation";
 import * as Location from "expo-location";
 import * as Permissions from "expo-permissions";
+
+import {
+  getListRecommendStore,
+  getListStoreByKeyword
+} from "../controllers/store.controller";
+import Shop from "../components/Shop";
 
 import IconSearch from "../assets/svg/search.svg";
 
 const windowWidth = Dimensions.get("window").width;
 
 const SearchScreen = props => {
-  const [location, setLocation] = React.useState({latitude: 0, longitude: 0});
+  const [location, setLocation] = React.useState({ latitude: 0, longitude: 0 });
   const [errorLocation, setErrorLocation] = React.useState("");
+  const [value, onChangeText] = React.useState("");
 
-  React.useEffect(() => {
-    _getLocationAsync();
-  }, []);
-  
   _getLocationAsync = async () => {
     let { status } = await Permissions.askAsync(Permissions.LOCATION);
     if (status !== "granted") {
@@ -34,11 +39,15 @@ const SearchScreen = props => {
     setLocation(location.coords);
   };
 
-  if (location.latitude)
-    console.log(`Lat: ${location.latitude} | Long: ${location.longitude}`);
-    
+  const _storeData = async (key, value) => {
+    try {
+      await AsyncStorage.setItem(key, value);
+    } catch (error) {}
+  };
 
-  const [value, onChangeText] = React.useState("");
+  const searchShops = async keyword => {
+    props.navigation.navigate("Searching", { keyword: keyword, location: location});
+  };
 
   const getKeyword = async key => {
     try {
@@ -54,6 +63,9 @@ const SearchScreen = props => {
     getKeyword("@keyword");
   }
 
+  React.useEffect(() => {
+    _getLocationAsync();
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -68,12 +80,13 @@ const SearchScreen = props => {
           />
           <TouchableOpacity
             style={styles.searchButton}
-            onPress={() => alert("keyword: " + value)}
+            onPress={() => searchShops(value)}
           >
             <IconSearch width={32} height={32} fill={"white"} />
           </TouchableOpacity>
         </View>
       </View>
+      <View style={{ height: 30 }}></View>
     </SafeAreaView>
   );
 };

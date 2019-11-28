@@ -13,7 +13,6 @@ import { logout, getLocalData } from "../controllers/account.controller";
 
 import IconMale from "../assets/svg/male.svg";
 import IconUser from "../assets/svg/user.svg";
-import IconLoveBox from "../assets/svg/lovebox.svg";
 import IconConcern from "../assets/svg/concern.svg";
 import IconLogout from "../assets/svg/logout.svg";
 import IconMore from "../assets/svg/more.svg";

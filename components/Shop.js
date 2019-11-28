@@ -15,7 +15,13 @@ import IconStar from "../assets/svg/star.svg";
 const windowWidth = Dimensions.get("window").width;
 
 const Shop = props => {
-  const { vote, shop, isLove, price, image, onPressItem } = props;
+  var { vote, shop, isLove, price, image, onPressItem, distance, onPressLove } = props;
+
+  if (parseInt(vote) > 1 && parseInt(vote) <= 5)
+    var votes = [...Array(parseInt(vote) - 1).keys()];
+  else if (parseInt(vote) > 5) var votes = [...Array(4).keys()];
+  else var votes = [...Array(0).keys()];
+
   return (
     <View style={styles.border}>
       <TouchableOpacity onPress={onPressItem}>
@@ -34,34 +40,29 @@ const Shop = props => {
                   <View>
                     <IconStar width={14} height={14} />
                   </View>
-                  <View style={{ paddingLeft: 3 }}>
-                    <IconStar width={14} height={14} />
-                  </View>
-                  <View style={{ paddingLeft: 3 }}>
-                    <IconStar width={14} height={14} />
-                  </View>
-                  <View style={{ paddingLeft: 3 }}>
-                    <IconStar width={14} height={14} />
-                  </View>
-                  <View style={{ paddingLeft: 3 }}>
-                    <IconStar width={14} height={14} />
-                  </View>
+                  {votes.map(vote => {
+                    return (
+                      <View key={vote}>
+                        <IconStar width={14} height={14} />
+                      </View>
+                    );
+                  })}
                   <Text style={{ paddingLeft: 5, fontSize: 14 }}>{vote}</Text>
                 </View>
               </View>
               <View style={styles.itemShop}>
-                <Text style={styles.shopName}>About 3.0 km</Text>
+                <Text style={styles.shopName}>{`About ${distance} km`}</Text>
               </View>
             </View>
           </View>
           <View style={styles.rightInfo}>
-            <View>
+            <TouchableOpacity onPress={onPressLove}>
               <IconHeart
                 width={25}
                 height={22}
                 fill={isLove ? "#F66767" : "#B9B9B9"}
               />
-            </View>
+            </TouchableOpacity>
             <View>
               <Text style={styles.price}>{price}k</Text>
             </View>

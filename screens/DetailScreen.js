@@ -6,9 +6,12 @@ import {
   TouchableOpacity,
   Image,
   Dimensions,
-  FlatList
+  FlatList,
+  ActivityIndicator
 } from "react-native";
 import { Linking } from "expo";
+
+import { getStoreDetail } from "../controllers/store.controller";
 
 import IconHeart from "../assets/svg/heart.svg";
 import IconLeft from "../assets/svg/left.svg";
@@ -20,48 +23,47 @@ import { ScrollView } from "react-native-gesture-handler";
 
 const windowWidth = Dimensions.get("window").width;
 
+// Truyền vào Params:
+// storeID
 const DetailScreen = props => {
-  const items = [
-    {
-      title: "Đùi gà siêu giòn",
-      isBestSeller: true,
-      price: 30,
-      image: require("../assets/images/combosmall.jpg")
-    },
-    {
-      title: "Cơm cánh gà rán",
-      isBestSeller: true,
-      price: 30,
-      image: require("../assets/images/DemoImage1.jpg")
-    },
-    {
-      title: "Cơm cá phi lê",
-      isBestSeller: false,
-      price: 30,
-      image: require("../assets/images/comca.jpg")
-    },
-    {
-      title: "Combo cơm trưa",
-      isBestSeller: false,
-      price: 30,
-      image: require("../assets/images/DemoImage1.jpg")
-    },
-    {
-      title: "Cơm gà siêu cay",
-      isBestSeller: false,
-      price: 30,
-      image: require("../assets/images/combosmall.jpg")
-    }
-  ];
+  const [displayData, setDisplayData] = React.useState({});
+  const [loading, setLoading] = React.useState(true);
+
+  // B1: Lấy storeID
+  const storeID = props.navigation.getParam("storeID", -1);
+  console.log("- storeID: " + storeID);
+
+  if (storeID !== -1) {
+    //Sau khi có STOREID  => FETCH storeID nhận về data
+    React.useEffect(() => {
+      const id = 123;
+      fetchData(id);
+    }, []);
+  } else {
+    console.log("Đéo thấy params storeID");
+    props.navigation.goBack();
+  }
+
+  const fetchData = async (storeID) => {
+    setLoading(true);
+    const data = await getStoreDetail(storeID);
+    setDisplayData(data);
+    setLoading(false);
+  }
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+          <ActivityIndicator size="large" loading={loading} />
+      </View>
+    )
+  }
 
   return (
     <View style={styles.container}>
       {/* ImageBox */}
       <View style={styles.ImageBox}>
-        <Image
-          style={styles.bigPhoto}
-          source={require("../assets/images/DemoImage1.jpg")}
-        />
+        <Image style={styles.bigPhoto} source={{ uri: displayData.imageUrl }} />
       </View>
 
       {/* InfoBox */}
@@ -70,26 +72,27 @@ const DetailScreen = props => {
         <View style={styles.FavoriteBox}>
           <TouchableOpacity
             onPress={() => {
-              alert("Thả tim");
+              alert("Thả tim " + storeID);
+              alert(displayData.token);
             }}
           >
             <IconHeart
               width={36}
               height={36}
-              fill={props.isBestSeller ? "#F66767" : "#545454"}
+              fill={displayData.isFavorite == "true" ? "#F66767" : "#545454"}
             />
           </TouchableOpacity>
         </View>
         <View style={styles.shopMainInfo}>
-          <Text style={styles.ShopName}>Otoké Chicken</Text>
+          <Text style={styles.ShopName}>{displayData.name}</Text>
           <View style={styles.shopInfo}>
             <View style={styles.rowDirection}>
               <IconCheckin width={26} height={26} fill={"#D8B05E"} />
-              <Text style={styles.miniText}>Quận 5, TP. Hồ Chí Minh</Text>
+              <Text style={styles.miniText}>{displayData.address}</Text>
             </View>
             <View style={[styles.rowDirection, { paddingTop: 5 }]}>
               <IconOffer width={26} height={26} fill={"#D8B05E"} />
-              <Text style={styles.miniText}>Hoàn tiền 10% từ MOMO</Text>
+              <Text style={styles.miniText}>{displayData.cashback}</Text>
             </View>
           </View>
         </View>
@@ -98,23 +101,16 @@ const DetailScreen = props => {
             contentContainerStyle={styles.centerAll}
             showsVerticalScrollIndicator={false}
           >
-            <Text style={styles.description}>
-              Otoké trong tiếng Hàn Quốc nghĩa là «Wow» hay «Làm sao đây?» Và đó
-              cũng chính là cảm giác mà chúng tôi muốn mang đến cho người yêu ẩm
-              thực khi thưởng thức món gà rán trứ danh.
-            </Text>
+            <Text style={styles.description}>{displayData.description}</Text>
             <FlatList
               contentContainerStyle={{ paddingHorizontal: 15 }}
-              data={items}
+              data={displayData.menu}
               renderItem={({ item }) => (
                 <Item
                   title={item.title}
-                  vote={item.vote}
-                  shop={item.shop}
-                  isBestSeller={item.isBestSeller}
+                  isBestSeller={item.isBestSeller == "true"}
                   price={item.price}
                   image={item.image}
-                  onPressItem={item.onPressItem}
                 />
               )}
               keyExtractor={item => item.title}
@@ -135,9 +131,12 @@ const DetailScreen = props => {
       {/* OrderButtonBox */}
       <View style={styles.OrderButtonBox}>
         <TouchableOpacity
-          onPress={() => {
-            var s = "Trà Sữa";
-            var phone ="1900" + (s.charCodeAt(0) + s.charCodeAt(1)) + (s.charCodeAt(0) % 10);
+          onPress={async () => {
+            var s = displayData.name;
+            var phone =
+              "1900" +
+              (s.charCodeAt(0) + s.charCodeAt(1)) +
+              (s.charCodeAt(0) % 10);
             Linking.openURL(`tel:${phone}`);
           }}
         >

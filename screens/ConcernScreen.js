@@ -68,9 +68,9 @@ const ConcernScreen = (props) => {
           <Text>Others</Text>
         </TouchableOpacity>
       </View>
-      <TouchableOpacity style={styles.button} onPress={ () => { props.navigation.navigate("EditInfo")}
+      <TouchableOpacity style={styles.button} onPress={ () => { props.navigation.navigate("Account")}
       }>
-        <Text style={styles.buttonText}>Let's see offers</Text>
+        <Text style={styles.buttonText}>Save</Text>
       </TouchableOpacity>
     </View>
   );
@@ -92,9 +92,9 @@ const styles = StyleSheet.create({
     borderRadius: 40
   },
   buttonText: {
-    fontSize: 18,
+    fontSize: 22,
+    fontWeight: '400',
     color: "white",
-    fontWeight: "bold"
   },
   concern: {
     margin: 3,

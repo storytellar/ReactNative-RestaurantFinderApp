@@ -15,7 +15,7 @@ import { newLogin } from "../controllers/account.controller";
 
 import IconUser from "../assets/svg/user.svg";
 import IconPass from "../assets/svg/pass.svg";
-import IconKey from "../assets/svg/key.svg";
+import IconLogin from "../assets/svg/login.svg";
 
 const windowWidth = Dimensions.get("window").width;
 
@@ -29,7 +29,7 @@ const LoginScreen = props => {
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
         <ActivityIndicator animating={isClicked} size="large" color="#aaa" />
-        <IconKey width={200} height={200} />
+        <IconLogin width={400} height={250} />
         <Text>{errorLogin ? "🥵 Something's wronggg !!!": "" }</Text>
         {/* TÀI KHOẢN */}
         <View style={styles.searchBoxWrapper}>
