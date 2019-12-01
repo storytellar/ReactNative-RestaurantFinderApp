@@ -7,7 +7,8 @@ import {
   AsyncStorage,
   FlatList,
   ActivityIndicator,
-  Text
+  Text,
+  TouchableOpacity
 } from "react-native";
 import SafeAreaView from "react-native-safe-area-view";
 import * as Location from "expo-location";
@@ -47,6 +48,7 @@ const RecommendScreen = props => {
   const [hasErrored, setHasApiError] = React.useState(false);
   const [lastPageReached, setLastPageReached] = React.useState(false);
   const [pageNumber, setPageNumber] = React.useState(1);
+  const [suggestOption, setSuggestOption] = React.useState(1);
 
   var banners = [
     {
@@ -89,15 +91,12 @@ const RecommendScreen = props => {
     setLoading(false);
   };
 
- 
-
   const _storeData = async (key, value) => {
     try {
       await AsyncStorage.setItem(key, value);
     } catch (error) {}
   };
 
-    
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView
@@ -146,11 +145,21 @@ const RecommendScreen = props => {
           <Category name="Drinks" />
         </View>
 
+        {/* Classify List (Button) */}
+        <View style={styles.optionButtons}>
+          <TouchableOpacity style={[styles.optionLeftButton, (suggestOption === 1) ? styles.optionActiveButton : '']}>
+            <Text style={[styles.optionText, (suggestOption === 1) ? styles.optionActiveText : '']}>FOOD</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={[styles.optionRightButton, (suggestOption === 2) ? styles.optionActiveButton : '' ]}>
+            <Text style={[styles.optionText, (suggestOption === 2) ? styles.optionActiveText : '' ]}>STORE</Text>
+          </TouchableOpacity>
+        </View>
+
         {/* List of Shops */}
         <FlatList
           showsVerticalScrollIndicator={false}
-          style={{flex: 1}}
-          contentContainerStyle={{flex: 1, paddingHorizontal: 15 }}
+          style={{ flex: 1 }}
+          contentContainerStyle={{ flex: 1, paddingHorizontal: 15 }}
           data={shops}
           onEndReached={getShops}
           onEndReachedThreshold={1}
@@ -171,7 +180,9 @@ const RecommendScreen = props => {
               price={item.price}
               distance={item.distance}
               image={item.image}
-              onPressLove={() => {alert(item.storeID);}}
+              onPressLove={() => {
+                alert(item.storeID);
+              }}
               onPressItem={() => {
                 item.onPressItem(item.storeID);
               }}
@@ -207,7 +218,43 @@ const styles = StyleSheet.create({
     height: 85,
     flexDirection: "row",
     justifyContent: "space-between"
-  }
+  },
+  optionButtons: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 15,
+    marginBottom: 5
+  },
+  optionLeftButton: {
+    flexDirection: "row",
+    backgroundColor: "white",
+    width: (9.5384615385 * windowWidth) / 12 / 2 - 20,
+    height: 40,
+    borderTopLeftRadius: 20,
+    borderBottomLeftRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 0.5,
+    borderColor: "#DC8D66"
+  },
+  optionRightButton: {
+    flexDirection: "row",
+    backgroundColor: "white",
+    width: (9.5384615385 * windowWidth) / 12 / 2 - 20,
+    height: 40,
+    borderTopRightRadius: 20,
+    borderBottomRightRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 0.5,
+    borderColor: "#DC8D66"
+  },
+  optionActiveButton: {
+    backgroundColor: "#DC8D66"
+  },
+  optionText: { fontSize: 16, color: "#DC8D66", fontWeight: "500" },
+  optionActiveText: { color: "white" }
 });
 
 export default RecommendScreen;
