@@ -81,7 +81,6 @@ const getListStoreByKeyword = async (keyword, page, long, lat, props) => {
   return result;
 };
 
-
 // Get all banners
 // Params: String token
 // Result: List of banner | Null
@@ -138,7 +137,7 @@ const getCategory = async token => {
 // Params: String token, String page, String lat, String long, Props
 // Result: Store array | Null
 const getListRecommendStore = async (token, page, lat, long, props) => {
-  let uri = `suggest/store?page=${page}&lat=${lat}&lng=${long}`
+  let uri = `suggest?type=store&page=${page}&lat=${lat}&lng=${long}`
   let data = await restAPI.getMethod(token, uri)
 
   const goDetail = (storeID) => {
@@ -158,20 +157,6 @@ const getListRecommendStore = async (token, page, lat, long, props) => {
   }
 
   return data
-
-  // Structure of each element in data result
-  /*
-    {
-      image: { uri: "http://sv.thanhlinhwedding.com/image-app/menu.jpg" },
-      storeID: "123" + i,
-      shop: "Otoké chicken",
-      vote: 5,
-      distance: long === -1 ? "deobiet" : "3.0",
-      isLove: true,
-      price: 30, // 30k
-      onPressItem: storeID => goDetail(storeID)
-    }
-  */
 };
 
 export {  getListRecommendStore, 
