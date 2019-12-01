@@ -446,7 +446,7 @@ const RecommendScreen = props => {
                     key={item.store_id}
                     vote={item.stars}
                     shop={item.store_name}
-                    isLove={item.isFavorite}
+                    isLove={false}
                     price={item.avg_price}
                     distance={Math.round(item.distance * 100) / 100}
                     image={item.imgLink}
