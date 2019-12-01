@@ -49,7 +49,8 @@ const SearchScreen = props => {
   const searchShops = async keyword => {
     props.navigation.navigate("Searching", {
       keyword: keyword,
-      location: location
+      location: location,
+      searchType: isFood ? 1 : 2
     });
   };
 
