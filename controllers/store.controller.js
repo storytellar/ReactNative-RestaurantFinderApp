@@ -1,13 +1,11 @@
-import { AsyncStorage } from "react-native";
-
 import { getLocalData } from "./account.controller";
+let restAPI = require('./restAPI.controller');
 
 const getStoreDetail = async storeid => {
   console.log(`[getStoreDetail] đang chạy`);
   data = await getLocalData();
   data = JSON.parse(data);
   console.log("TOKEN:" + data.token);
-  
 
   // Trả về toàn bộ info làm trang detail shop
   var result = {
@@ -56,99 +54,6 @@ const getStoreDetail = async storeid => {
   return result;
 };
 
-const getListRecommendStore = async (page, long, lat, props) => {
-  const goDetail = storeID => {
-    props.navigation.navigate("Detail", { storeID });
-  };
-
-  // console.log("getListRecommendStore đang chạy:");
-
-  // gửi lên page, long, lat nhận list store
-  var result = [];
-  if (page === 1)
-    for (let i = 0; i < 6; i++) {
-      result.push({
-        image: { uri: "http://sv.thanhlinhwedding.com/image-app/menu.jpg" },
-        storeID: "123" + i,
-        shop: "Otoké chicken",
-        vote: 5,
-        distance: long === -1 ? "deobiet" : "3.0",
-        isLove: true,
-        price: 30, // 30k
-        onPressItem: storeID => goDetail(storeID)
-      });
-    }
-  if (page === 2)
-    result.push({
-      image: { uri: "http://sv.thanhlinhwedding.com/image-app/menu.jpg" },
-      storeID: "123" + 999,
-      shop: "2222222",
-      vote: 5,
-      distance: long === -1 ? "deobiet" : "3.0",
-      isLove: true,
-      price: 30, // 30k
-      onPressItem: storeID => goDetail(storeID)
-    });
-  if (page === 3)
-    result.push({
-      image: { uri: "http://sv.thanhlinhwedding.com/image-app/menu.jpg" },
-      storeID: "1232222" + 999,
-      shop: "33333",
-      vote: 5,
-      distance: long === -1 ? "deobiet" : "3.0",
-      isLove: true,
-      price: 30, // 30k
-      onPressItem: storeID => goDetail(storeID)
-    });
-  if (page === 4)
-    result.push({
-      image: { uri: "http://sv.thanhlinhwedding.com/image-app/menu.jpg" },
-      storeID: "xxxx" + 999,
-      shop: "4444",
-      vote: 5,
-      distance: long === -1 ? "deobiet" : "3.0",
-      isLove: true,
-      price: 30, // 30k
-      onPressItem: storeID => goDetail(storeID)
-    });
-
-  return result;
-};
-
-const getListBannerAndCategory = async () => {
-  // Trả về obj gồm 2 array: banner và 5 category
-  const result = {
-    Banner: [
-      {
-        imageUrl: "xxxxxxxx.jpg",
-        mShopID: "1234327"
-      },
-      {
-        imageUrl: "xxxxxxxx.jpg",
-        mShopID: "1234327"
-      }
-    ],
-    Category: [
-      {
-        name: "Food"
-      },
-      {
-        name: "Food"
-      },
-      {
-        name: "Food"
-      },
-      {
-        name: "Food"
-      },
-      {
-        name: "Food"
-      }
-    ]
-  };
-  return result;
-};
-
 const getListStoreByKeyword = async (keyword, page, long, lat, props) => {
   // Trả về array shop sau khi search
   const goDetail = storeID => {
@@ -176,4 +81,62 @@ const getListStoreByKeyword = async (keyword, page, long, lat, props) => {
   return result;
 };
 
-export { getListRecommendStore, getListStoreByKeyword, getStoreDetail };
+
+// Get all banners
+// Params: String token
+// Result: List of banner | Null
+const getBanners = async token => {
+  return (await restAPI.getMethod(token, "banner"));
+};
+
+// Get all categories
+// Params: String token
+// Result: List of category | Null
+const getCategory = async token => {
+  return (await restAPI.getMethod(token, "concern/rawlist"))
+};
+
+// Get suggestive store list
+// Params: String token, String page, String lat, String long, Props
+// Result: Store array | Null
+const getListRecommendStore = async (token, page, lat, long, props) => {
+  let uri = `suggest/store?page=${page}&lat=${lat}&lng=${long}`
+  let data = await restAPI.getMethod(token, uri)
+
+  const goDetail = (storeID) => {
+    props.navigation.navigate("Detail", { storeID });
+  };
+
+  if (data == null) return null
+
+  for (let i=0; i<data.length; ++i) {
+    // Add new key onPressItem
+    data[i]['onPressItem'] = goDetail(data[i]['store_id'])
+
+    // Convert key imgLink to object "uri imgLink"
+    imgLink = data[i]['imgLink']
+    data[i]['imgLink'] = { uri: imgLink }
+  }
+
+  return data
+
+  // Structure of each element in data result
+  /*
+    {
+      image: { uri: "http://sv.thanhlinhwedding.com/image-app/menu.jpg" },
+      storeID: "123" + i,
+      shop: "Otoké chicken",
+      vote: 5,
+      distance: long === -1 ? "deobiet" : "3.0",
+      isLove: true,
+      price: 30, // 30k
+      onPressItem: storeID => goDetail(storeID)
+    }
+  */
+};
+
+export {  getListRecommendStore, 
+          getListStoreByKeyword, 
+          getStoreDetail,
+          getBanners,
+          getCategory };
