@@ -13,7 +13,10 @@ import SafeAreaView from "react-native-safe-area-view";
 import * as Location from "expo-location";
 import * as Permissions from "expo-permissions";
 
-import { getListRecommendStore } from "../controllers/store.controller";
+import  { getListRecommendStore, 
+          getBanners, 
+          getCategory 
+        } from "../controllers/store.controller";
 
 import Shop from "../components/Shop";
 import Category from "../components/Category";
@@ -22,89 +25,139 @@ import Banner from "../components/Banner";
 const windowWidth = Dimensions.get("window").width;
 
 const RecommendScreen = props => {
+  // Declare hook
+  const [location, setLocation] = React.useState({ latitude: 0, longitude: 0 });
+  const [stores, setStores] = React.useState([]);
+  const [loading, setLoading] = React.useState(false);
+  const [lastPageReached, setLastPageReached] = React.useState(false);
+  const [pageNumber, setPageNumber] = React.useState(1);
+  const [error, setError] = React.useState("");
+
+  // First running => Get all necessary data
+  React.useEffect(() => {
+    getSuggestedStores();
+  }, []);
+
+  // Get location (latlong) of user through their GPS
   _getLocationAsync = async () => {
     var location;
     var { status } = await Permissions.askAsync(Permissions.LOCATION);
     if (status !== "granted") {
       console.log("Permission to access location was denied");
-      setLocation({ latitude: -1, longitude: -1 });
+      setLocation({ latitude: 0, longitude: 0 });
     }
     try {
       location = await Location.getCurrentPositionAsync({});
       setLocation(location.coords);
-    } catch (error) {}
+    } 
+    catch (error) {
+      setError(error.toString())
+    }
     return location.coords;
   };
 
+  // Get all info about store
+  const getSuggestedStores = async () => {
+    if (lastPageReached) return;
+    setLoading(true);
+
+    await _getLocationAsync();
+
+    let token = await AsyncStorage.getItem("@account");
+    let data = await getListRecommendStore(token, pageNumber, location.latitude, location.longitude, props )
+
+    if (data.length == 0) {
+      setLastPageReached(true);
+    }
+    else {
+      let newStoreList = stores.concat(data);
+      setStores(newStoreList);
+      setPageNumber(pageNumber + 1);
+    }
+    
+    setLoading(false);
+  };
+  
+  // Function for jumping detail page
   const goDetail = storeID => {
     props.navigation.navigate("Detail", { storeID });
   };
 
-  const [location, setLocation] = React.useState({ latitude: 0, longitude: 0 });
-  const [errorLocation, setErrorLocation] = React.useState("");
-  const [shops, setShops] = React.useState([]);
-  const [loading, setLoading] = React.useState(false);
-  const [hasErrored, setHasApiError] = React.useState(false);
-  const [lastPageReached, setLastPageReached] = React.useState(false);
-  const [pageNumber, setPageNumber] = React.useState(1);
-
-  var banners = [
-    {
-      storeID: "123",
-      imageUrl: require("../assets/images/banner.jpg")
-    },
-    {
-      storeID: "456",
-      imageUrl: require("../assets/images/banner.jpg")
-    },
-    {
-      storeID: "789",
-      imageUrl: require("../assets/images/banner.jpg")
-    }
-  ];
-
-  React.useEffect(() => {
-    getShops();
-  }, []);
-
-  const getShops = async () => {
-    if (pageNumber === 3) setLastPageReached(true);
-    if (lastPageReached) return;
-    setLoading(true);
-    await _getLocationAsync();
-    newShopList = await getListRecommendStore(
-      pageNumber,
-      location.longitude,
-      location.latitude,
-      props
-    );
-    const hasMoreShop = newShopList.length > 0;
-    if (hasMoreShop) {
-      const newShops = shops.concat(newShopList);
-      setShops(newShops);
-      setPageNumber(pageNumber + 1);
-    } else {
-      setLastPageReached(true);
-    }
-    setLoading(false);
-  };
-
- 
-
+  // Store data (key-value) to localStorage
   const _storeData = async (key, value) => {
     try {
       await AsyncStorage.setItem(key, value);
     } catch (error) {}
   };
 
-    
+  // Load all info of banners
+  loadBanners = async () => {
+    let token = await AsyncStorage.getItem("@account");
+    let data = await getBanners(token);
+
+    if (data == null) {
+      return (<></>);
+    }
+
+    return (
+     <> {
+        data.map(banner => {
+          return (
+            <Banner
+              key={banner.store_id}
+              onPressBanner={() => goDetail(banner.store_id)}
+              img={banner.img}
+            />
+          )
+        })
+      } </> 
+    );
+  }
+
+  // Load all info of category list
+  loadCategory = async () => {
+    let token = await AsyncStorage.getItem("@account");
+    let data = await getCategory(token);
+
+    if (data == null) {
+      return (<></>);
+    }
+
+    return (
+     <> {
+        data.map(cate => {
+          return (
+            <Category
+              name={cate.label}
+              onPressButton={() => {
+                _storeData("@keyword", cate.label);
+                props.navigation.navigate("Search");
+              }}
+            />
+          )
+        })
+      } </> 
+    );
+  }
+
+  // Catching error
+  if (error.length != 0) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <Text>Error: {error}</Text>
+        <Text>You should re-login for loading data again</Text>
+      </SafeAreaView>
+    );
+  }
+
+  // Render view
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView
         contentContainerStyle={styles.containerScrollView}
         showsVerticalScrollIndicator={false}
       >
-        {/* List of banner */}
+        {/* Banner list */}
         <View style={styles.bannerScrollWrapper}>
           <ScrollView
             contentContainerStyle={styles.bannerScroll}
@@ -112,54 +165,36 @@ const RecommendScreen = props => {
             showsHorizontalScrollIndicator={false}
           >
             <View style={{ width: windowWidth / 10 - 10 }}></View>
-            {banners.map(banner => {
-              return (
-                <Banner
-                  key={banner.storeID}
-                  onPressBanner={() => goDetail(banner.storeID)}
-                  img={banner.imageUrl}
-                />
-              );
-            })}
+            { 
+              async () => await this.loadBanners() 
+            }
             <View style={{ width: windowWidth / 10 }}></View>
           </ScrollView>
         </View>
 
-        {/* List of Category */}
+        {/* Category list */}
         <View style={styles.CategoryWrapper}>
-          <Category
-            name="Drink"
-            onPressButton={() => {
-              _storeData("@keyword", "Drink");
-              props.navigation.navigate("Search");
-            }}
-          />
-          <Category
-            name="Food"
-            onPressButton={() => {
-              _storeData("@keyword", "Food");
-              props.navigation.navigate("Search");
-            }}
-          />
-          <Category name="Drinks" />
-          <Category name="Drinks" />
-          <Category name="Drinks" />
+          { 
+            async () => await this.loadCategory() 
+          }
         </View>
 
-        {/* List of Shops */}
+        {/* Store list */}
         <FlatList
           showsVerticalScrollIndicator={false}
           style={{flex: 1}}
           contentContainerStyle={{flex: 1, paddingHorizontal: 15 }}
-          data={shops}
-          onEndReached={getShops}
+          data={stores}
+          onEndReached={getSuggestedStores}
           onEndReachedThreshold={1}
           ListFooterComponent={
-            lastPageReached ? (
+            lastPageReached ? 
+            (
               <Text style={{ textAlign: "center" }}>
-                Không còn sản phẩm phù hợp.
+                End of page
               </Text>
-            ) : (
+            ) : 
+            (
               <ActivityIndicator size="large" loading={loading} />
             )
           }
