@@ -360,7 +360,7 @@ const RecommendScreen = props => {
           (suggestOption == 1) ? 
           (
             // Food list
-            <Text>Food</Text> 
+            <ItemDetail title = "Tên món" vote = {3} shop = "Quán ăn" isLove={true} price={30} image={{uri: 'http://sv.thanhlinhwedding.com/image-app/menu.jpg'}} onPressItem={() => alert('xxxx')} />
           ) :
           (
             // Store list
