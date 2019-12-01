@@ -29,6 +29,8 @@ const RecommendScreen = props => {
   // Declare hook
   const [location, setLocation] = React.useState({ latitude: 0, longitude: 0 });
   const [stores, setStores] = React.useState([]);
+  const [banners, setBanners] = React.useState([]);
+  const [categories, setCategories] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
   const [lastPageReached, setLastPageReached] = React.useState(false);
   const [pageNumber, setPageNumber] = React.useState(1);
@@ -38,12 +40,14 @@ const RecommendScreen = props => {
   // First running => Get all necessary data
   React.useEffect(() => {
     getSuggestedStores();
+    loadBanners();
+    loadCategory();
   }, []);
 
   // Get location (latlong) of user through their GPS
   _getLocationAsync = async () => {
-    var location;
-    var { status } = await Permissions.askAsync(Permissions.LOCATION);
+    let location;
+    let { status } = await Permissions.askAsync(Permissions.LOCATION);
     if (status !== "granted") {
       console.log("Permission to access location was denied");
       setLocation({ latitude: 0, longitude: 0 });
@@ -52,10 +56,7 @@ const RecommendScreen = props => {
       location = await Location.getCurrentPositionAsync({});
       setLocation(location.coords);
     } 
-    catch (error) {
-      setError(error.toString())
-    }
-    return location.coords;
+    catch (error) {}
   };
 
   // Get all info about store
@@ -65,7 +66,7 @@ const RecommendScreen = props => {
 
     await _getLocationAsync();
 
-    let token = await AsyncStorage.getItem("@account");
+    let token = (JSON.parse(await AsyncStorage.getItem("@account"))).token;
     let data = await getListRecommendStore(token, pageNumber, location.latitude, location.longitude, props )
 
     if (data == null) {
@@ -94,52 +95,28 @@ const RecommendScreen = props => {
 
   // Load all info of banners
   loadBanners = async () => {
-    let token = await AsyncStorage.getItem("@account");
+    let token = (JSON.parse(await AsyncStorage.getItem("@account"))).token;
     let data = await getBanners(token);
 
-    if (data == null) {
-      return (<></>);
+    if (data != null) {
+      setBanners(data)
+      return
     }
 
-    return (
-     <> {
-        data.map(banner => {
-          return (
-            <Banner
-              key={banner.store_id}
-              onPressBanner={() => goDetail(banner.store_id)}
-              img={banner.img}
-            />
-          )
-        })
-      } </> 
-    );
+    setBanners([])
   }
 
   // Load all info of category list
   loadCategory = async () => {
-    let token = await AsyncStorage.getItem("@account");
+    let token = (JSON.parse(await AsyncStorage.getItem("@account"))).token;
     let data = await getCategory(token);
 
-    if (data == null) {
-      return (<></>);
+    if (data != null) {
+      setCategories(data)
+      return
     }
 
-    return (
-     <> {
-        data.map(cate => {
-          return (
-            <Category
-              name={cate.label}
-              onPressButton={() => {
-                _storeData("@keyword", cate.label);
-                props.navigation.navigate("Search");
-              }}
-            />
-          )
-        })
-      } </> 
-    );
+    setCategories([])
   }
 
   // Catching error
@@ -151,7 +128,7 @@ const RecommendScreen = props => {
       </SafeAreaView>
     );
   }
-
+  
   // Render view
   return (
     <SafeAreaView style={styles.container}>
@@ -168,7 +145,15 @@ const RecommendScreen = props => {
           >
             <View style={{ width: windowWidth / 10 - 10 }}></View>
             { 
-              loadBanners()
+              banners.map((banner) => {
+                return (
+                  <Banner
+                    key={banner.store_id}
+                    onPressBanner={() => goDetail(banner.store_id)}
+                    img={banner.img}
+                  />
+                )
+              }) 
             }
             <View style={{ width: windowWidth / 10 }}></View>
           </ScrollView>
@@ -177,57 +162,82 @@ const RecommendScreen = props => {
         {/* Category list */}
         <View style={styles.CategoryWrapper}>
           { 
-            loadCategory()
+           categories.map((cate) => {
+             return (
+              <Category
+                key={cate.concern_id}
+                name={cate.label}
+                onPressButton={() => {
+                  _storeData("@keyword", cate.label);
+                  props.navigation.navigate("Search");
+                }}
+              />
+             )
+           })
           }
         </View>
 
         {/* Classify List (Button) */}
         <View style={styles.optionButtons}>
-          <TouchableOpacity style={[styles.optionLeftButton, (suggestOption === 1) ? styles.optionActiveButton : '']}>
+          <TouchableOpacity 
+            style={[styles.optionLeftButton, (suggestOption === 1) ? styles.optionActiveButton : '']}
+            onPress={() => setSuggestOption(1)}
+          >
             <Text style={[styles.optionText, (suggestOption === 1) ? styles.optionActiveText : '']}>FOOD</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.optionRightButton, (suggestOption === 2) ? styles.optionActiveButton : '' ]}>
+          <TouchableOpacity 
+            style={[styles.optionRightButton, (suggestOption === 2) ? styles.optionActiveButton : '' ]}
+            onPress={() => setSuggestOption(2)}
+          >
             <Text style={[styles.optionText, (suggestOption === 2) ? styles.optionActiveText : '' ]}>STORE</Text>
           </TouchableOpacity>
         </View>
-
-        {/* Store list */}
-        {/* <FlatList
-          showsVerticalScrollIndicator={false}
-          style={{flex: 1}}
-          contentContainerStyle={{flex: 1, paddingHorizontal: 15 }}
-          data={stores}
-          onEndReached={getSuggestedStores}
-          onEndReachedThreshold={1}
-          ListFooterComponent={
-            lastPageReached ? 
-            (
-              <Text style={{ textAlign: "center" }}>
-                End of page
-              </Text>
-            ) : 
-            (
-              <ActivityIndicator size="large" loading={loading} />
-            )
-          }
-          renderItem={({ item }) => (
-            <Shop
-              vote={item.vote}
-              shop={item.shop}
-              isLove={item.isLove}
-              price={item.price}
-              distance={item.distance}
-              image={item.image}
-              onPressLove={() => {
-                alert(item.storeID);
-              }}
-              onPressItem={() => {
-                item.onPressItem(item.storeID);
-              }}
+        {
+          (suggestOption == 1) ? 
+          (
+            // Food list
+            <Text>Food</Text> 
+          ) :
+          (
+            // Store list
+            <FlatList
+              showsVerticalScrollIndicator={false}
+              style={{flex: 1}}
+              contentContainerStyle={{flex: 1, paddingHorizontal: 15 }}
+              data={stores}
+              onEndReached={getSuggestedStores}
+              onEndReachedThreshold={1}
+              ListFooterComponent={
+                lastPageReached ? 
+                (
+                  <Text style={{ textAlign: "center" }}>
+                    End of page
+                  </Text>
+                ) : 
+                (
+                  <ActivityIndicator size="large" loading={loading} />
+                )
+              }
+              renderItem={({ item }) => (
+                <Shop
+                  vote={item.vote}
+                  shop={item.shop}
+                  isLove={item.isLove}
+                  price={item.price}
+                  distance={item.distance}
+                  image={item.image}
+                  onPressLove={() => {
+                    alert(item.storeID);
+                  }}
+                  onPressItem={() => {
+                    item.onPressItem(item.storeID);
+                  }}
+                />
+              )}
+              keyExtractor={item => item.storeID}
             />
-          )}
-          keyExtractor={item => item.storeID}
-        /> */}
+          )
+        }
       </ScrollView>
     </SafeAreaView>
   );

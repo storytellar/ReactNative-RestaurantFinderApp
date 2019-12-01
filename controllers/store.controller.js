@@ -93,7 +93,45 @@ const getBanners = async token => {
 // Params: String token
 // Result: List of category | Null
 const getCategory = async token => {
-  return (await restAPI.getMethod(token, "concern/rawlist"))
+  let rawList = await restAPI.getMethod(token, "concern/rawlist")
+  if (rawList == null) return null
+
+  let myList = await restAPI.getMethod(token, "concern/mylist")
+  if (myList == null) {
+    // rawList > 5 => Pop element to 5
+    while (rawList.length > 5) {
+      rawList.pop()
+    }
+    return rawList
+  }
+  else {
+    // myList > 5 => Pop element to 5
+    while (myList.length > 5) {
+      myList.pop()
+    }
+
+    // myList = 5 => Return
+    if (myList.length == 5) return myList
+    
+    // myList < 5 => Add more element of rawList to myList => Return
+    for (let i=0; i<rawList.length; ++i) {
+      let rID = rawList[i]['concern_id']
+      let isEq = false
+      for (let j=0; j<myList.length; ++j) {
+        let mID = myList[j]['concern_id']
+        if (rID == mID) {
+          isEq = true
+          break
+        }
+      }
+      if (isEq == false) {
+        myList.push(rawList[i])
+      }
+      if (myList.length == 5) {
+        return myList
+      }
+    }
+  }
 };
 
 // Get suggestive store list
@@ -111,7 +149,8 @@ const getListRecommendStore = async (token, page, lat, long, props) => {
 
   for (let i=0; i<data.length; ++i) {
     // Add new key onPressItem
-    data[i]['onPressItem'] = goDetail(data[i]['store_id'])
+    let storeID = data[i]['store_id']
+    data[i]['onPressItem'] = (storeID) => goDetail(storeID)
 
     // Convert key imgLink to object "uri imgLink"
     imgLink = data[i]['imgLink']
