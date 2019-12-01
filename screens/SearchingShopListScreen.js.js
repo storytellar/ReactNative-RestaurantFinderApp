@@ -3,7 +3,6 @@ import {
   View,
   Text,
   StyleSheet,
-  TextInput,
   SafeAreaView,
   Dimensions,
   TouchableOpacity,
@@ -16,6 +15,7 @@ import {
   getListStoreByKeyword,
   getListFoodByKeyword
 } from "../controllers/store.controller";
+
 import Shop from "../components/Shop";
 import ItemDetail from "../components/ItemDetail";
 
