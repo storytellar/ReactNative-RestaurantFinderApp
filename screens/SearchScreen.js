@@ -29,6 +29,7 @@ const SearchScreen = props => {
   const [location, setLocation] = React.useState({ latitude: 0, longitude: 0 });
   const [errorLocation, setErrorLocation] = React.useState("");
   const [value, onChangeText] = React.useState("");
+  const [isFood, setOption] = React.useState(true);
 
   _getLocationAsync = async () => {
     let { status } = await Permissions.askAsync(Permissions.LOCATION);
@@ -46,7 +47,10 @@ const SearchScreen = props => {
   };
 
   const searchShops = async keyword => {
-    props.navigation.navigate("Searching", { keyword: keyword, location: location});
+    props.navigation.navigate("Searching", {
+      keyword: keyword,
+      location: location
+    });
   };
 
   const getKeyword = async key => {
@@ -67,10 +71,12 @@ const SearchScreen = props => {
     _getLocationAsync();
   }, []);
 
+  console.log(isFood ? "food" : "store");
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerText}>Everythings that you need!</Text>
+        <Text style={styles.headerText}>Everything that you need!</Text>
         <View style={styles.searchBoxWrapper}>
           <TextInput
             style={styles.input}
@@ -86,7 +92,27 @@ const SearchScreen = props => {
           </TouchableOpacity>
         </View>
       </View>
-      <View style={{ height: 30 }}></View>
+
+      <View style={{ height: 5 }}></View>
+
+      <View style={{ width: windowWidth * 0.82, flexDirection: "row" }}>
+        <TouchableOpacity
+          style={isFood ? styles.concernSelected : styles.concern}
+          onPress={() => setOption(true)}
+        >
+          <Text style={isFood ? { color: "white" } : { color: "#DC8D66" }}>
+            FOOD
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={!isFood ? styles.concernSelected : styles.concern}
+          onPress={() => setOption(false)}
+        >
+          <Text style={!isFood ? { color: "white" } : { color: "#DC8D66" }}>
+            STORE
+          </Text>
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 };
@@ -146,6 +172,28 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderRadius: 20,
     marginRight: 5
+  },
+  concern: {
+    margin: 3,
+    width: windowWidth * 0.2,
+    paddingVertical: 10,
+    // backgroundColor: "#357376",
+    borderWidth: 1,
+    borderColor: "#DC8D66",
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  concernSelected: {
+    margin: 3,
+    width: windowWidth * 0.2,
+    paddingVertical: 10,
+    backgroundColor: "#DC8D66",
+    borderWidth: 1,
+    borderColor: "#DC8D66",
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center"
   }
 });
 

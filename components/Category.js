@@ -38,6 +38,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 16,
+    justifyContent: 'center',
     color: "#3C3D47"
   }
 });
