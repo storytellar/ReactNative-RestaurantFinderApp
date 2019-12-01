@@ -32,12 +32,16 @@ const RecommendScreen = props => {
   // Declare hook
   const [location, setLocation] = React.useState({ latitude: 0, longitude: 0 });
   const [stores, setStores] = React.useState([]);
+  const [food, setFood] = React.useState([]);
   const [banners, setBanners] = React.useState([]);
   const [categories, setCategories] = React.useState([]);
-  const [loading, setLoading] = React.useState(false);
   const [loadingPage, setLoadingPage] = React.useState(false);
-  const [lastPageReached, setLastPageReached] = React.useState(false);
-  const [pageNumber, setPageNumber] = React.useState(1);
+  const [loadingStore, setLoadingStore] = React.useState(false);
+  const [loadingFood, setLoadingFood] = React.useState(false);
+  const [lastFoodPageReached, setLastFoodPageReached] = React.useState(false);
+  const [lastStorePageReached, setLastStorePageReached] = React.useState(false);
+  const [pageNumberFood, setPageNumberFood] = React.useState(1);
+  const [pageNumberStore, setPageNumberStore] = React.useState(1);
   const [error, setError] = React.useState("");
   const [suggestOption, setSuggestOption] = React.useState(1);
 
@@ -46,9 +50,10 @@ const RecommendScreen = props => {
     getAllData();
   }, []);
 
+  // Get all data
   const getAllData = async () => {
     setLoadingPage(true);
-    await Promise.all([getSuggestedStores(), loadBanners(), loadCategory()]);
+    await Promise.all([getSuggestedStores(), getSuggestedFood(), loadBanners(), loadCategory()]);
     setLoadingPage(false);
   };
 
@@ -66,31 +71,58 @@ const RecommendScreen = props => {
     } catch (error) {}
   };
 
-  // Get all info about store
-  const getSuggestedStores = async () => {
-    if (lastPageReached) return;
-    setLoading(true);
+  // Get all info about FOOD
+  const getSuggestedFood = async () => {
+    if (lastFoodPageReached) return;
+    setLoadingFood(true);
 
     await _getLocationAsync();
 
     let token = JSON.parse(await AsyncStorage.getItem("@account")).token;
-    let data = await getListRecommendStore(
+    let data = await getListRecommendFood(
       token,
-      pageNumber,
+      pageNumberFood,
       location.latitude,
       location.longitude,
       props
     );
 
     if (data == null) {
-      setLastPageReached(true);
+      setLastFoodPageReached(true);
+    } else {
+      let newFoodList = food.concat(data);
+      setFood(newFoodList);
+      setPageNumberFood(pageNumberFood + 1);
+    }
+
+    setLoadingFood(false);
+  }
+
+  // Get all info about STORE
+  const getSuggestedStores = async () => {
+    if (lastStorePageReached) return;
+    setLoadingStore(true);
+
+    await _getLocationAsync();
+
+    let token = JSON.parse(await AsyncStorage.getItem("@account")).token;
+    let data = await getListRecommendStore(
+      token,
+      pageNumberStore,
+      location.latitude,
+      location.longitude,
+      props
+    );
+
+    if (data == null) {
+      setLastStorePageReached(true);
     } else {
       let newStoreList = stores.concat(data);
       setStores(newStoreList);
-      setPageNumber(pageNumber + 1);
+      setPageNumberStore(pageNumberStore + 1);
     }
 
-    setLoading(false);
+    setLoadingStore(false);
   };
 
   // Function for jumping detail page
@@ -367,14 +399,14 @@ const RecommendScreen = props => {
               showsVerticalScrollIndicator={false}
               style={{ flex: 1 }}
               contentContainerStyle={{ flex: 1, paddingHorizontal: 15 }}
-              data={stores}
-              onEndReached={getSuggestedStores}
+              data={food}
+              onEndReached={getSuggestedFood}
               onEndReachedThreshold={1}
               ListFooterComponent={
-                lastPageReached ? (
+                lastFoodPageReached ? (
                   <Text style={{ textAlign: "center" }}>End of page</Text>
                 ) : (
-                  <ActivityIndicator size="large" loading={loading} />
+                  <ActivityIndicator size="large" loading={loadingFood} />
                 )
               }
               renderItem={({ item }) => (
@@ -403,10 +435,10 @@ const RecommendScreen = props => {
               onEndReached={getSuggestedStores}
               onEndReachedThreshold={1}
               ListFooterComponent={
-                lastPageReached ? (
+                lastStorePageReached ? (
                   <Text style={{ textAlign: "center" }}>End of page</Text>
                 ) : (
-                  <ActivityIndicator size="large" loading={loading} />
+                  <ActivityIndicator size="large" loading={loadingStore} />
                 )
               }
               renderItem={({ item }) => (
