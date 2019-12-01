@@ -16,6 +16,7 @@ import * as Permissions from "expo-permissions";
 
 import {
   getListRecommendStore,
+  getListRecommendFood,
   getBanners,
   getCategory
 } from "../controllers/store.controller";
@@ -357,52 +358,76 @@ const RecommendScreen = props => {
             </Text>
           </TouchableOpacity>
         </View>
-        {suggestOption == 1 ? (
-          // Food list
-          <ItemDetail
-            title="Tên món"
-            vote={3}
-            shop="Quán ăn"
-            isLove={true}
-            price={30}
-            image={{ uri: "http://sv.thanhlinhwedding.com/image-app/menu.jpg" }}
-            onPressItem={() => alert("xxxx")}
-          />
-        ) : (
-          // Store list
-          <FlatList
-            showsVerticalScrollIndicator={false}
-            style={{ flex: 1 }}
-            contentContainerStyle={{ flex: 1, paddingHorizontal: 15 }}
-            data={stores}
-            onEndReached={getSuggestedStores}
-            onEndReachedThreshold={1}
-            ListFooterComponent={
-              lastPageReached ? (
-                <Text style={{ textAlign: "center" }}>End of page</Text>
-              ) : (
-                <ActivityIndicator size="large" loading={loading} />
-              )
-            }
-            renderItem={({ item }) => (
-              <Shop
-                vote={item.stars}
-                shop={item.store_name}
-                isLove={item.isFavorite}
-                price={item.avg_price}
-                distance={item.distance}
-                image={item.imgLink}
-                onPressLove={() => {
-                  alert(item.store_id);
-                }}
-                onPressItem={() => {
-                  item.onPressItem(item.store_id);
-                }}
-              />
-            )}
-            keyExtractor={item => item.store_id}
-          />
-        )}
+        {
+          (suggestOption == 1) ? 
+          (
+            // Food list
+            <FlatList
+              showsVerticalScrollIndicator={false}
+              style={{ flex: 1 }}
+              contentContainerStyle={{ flex: 1, paddingHorizontal: 15 }}
+              data={stores}
+              onEndReached={getSuggestedStores}
+              onEndReachedThreshold={1}
+              ListFooterComponent={
+                lastPageReached ? (
+                  <Text style={{ textAlign: "center" }}>End of page</Text>
+                ) : (
+                  <ActivityIndicator size="large" loading={loading} />
+                )
+              }
+              renderItem={({ item }) => (
+                <ItemDetail
+                  title={item.name}
+                  vote={item.stars}
+                  shop={item.store_name}
+                  isLove={item.isPopular}
+                  price={item.unitPrice}
+                  image={item.img}
+                  onPressItem={() => {
+                    item.onPressItem(item.store_id);
+                  }}
+                />
+              )}
+              keyExtractor={item => item.store_id}
+            />
+          ) : 
+          (
+            // Store list
+            <FlatList
+              showsVerticalScrollIndicator={false}
+              style={{ flex: 1 }}
+              contentContainerStyle={{ flex: 1, paddingHorizontal: 15 }}
+              data={stores}
+              onEndReached={getSuggestedStores}
+              onEndReachedThreshold={1}
+              ListFooterComponent={
+                lastPageReached ? (
+                  <Text style={{ textAlign: "center" }}>End of page</Text>
+                ) : (
+                  <ActivityIndicator size="large" loading={loading} />
+                )
+              }
+              renderItem={({ item }) => (
+                <Shop
+                  vote={item.stars}
+                  shop={item.store_name}
+                  isLove={item.isFavorite}
+                  price={item.avg_price}
+                  distance={item.distance}
+                  image={item.imgLink}
+                  onPressLove={() => {
+                    alert(item.store_id);
+                  }}
+                  onPressItem={() => {
+                    item.onPressItem(item.store_id);
+                  }}
+                />
+              )}
+              keyExtractor={item => item.store_id}
+            />
+          )
+        }
       </ScrollView>
     </SafeAreaView>
   );

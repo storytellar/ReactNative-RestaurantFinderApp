@@ -190,7 +190,34 @@ const getListRecommendStore = async (token, page, lat, long, props) => {
   return data
 };
 
+// Get suggestive food list
+// Params: String token, String page, String lat, String long, Props
+// Result: Food array | Null
+const getListRecommendFood = async (token, page, lat, long, props) => {
+  let uri = `suggest?type=food&page=${page}&lat=${lat}&lng=${long}`
+  let data = await restAPI.getMethod(token, uri)
+
+  const goDetail = (storeID) => {
+    props.navigation.navigate("Detail", { storeID });
+  };
+
+  if (data == null) return null
+
+  for (let i=0; i<data.length; ++i) {
+    // Add new key onPressItem
+    let storeID = data[i]['store_id']
+    data[i]['onPressItem'] = (storeID) => goDetail(storeID)
+
+    // Convert key img to object "uri img"
+    img = data[i]['img']
+    data[i]['img'] = { uri: img }
+  }
+
+  return data
+};
+
 export {  getListRecommendStore, 
+          getListRecommendFood,
           getListStoreByKeyword, 
           getListFoodByKeyword,
           getStoreDetail,
