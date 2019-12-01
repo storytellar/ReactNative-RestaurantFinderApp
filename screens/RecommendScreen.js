@@ -66,7 +66,7 @@ const RecommendScreen = props => {
     let token = await AsyncStorage.getItem("@account");
     let data = await getListRecommendStore(token, pageNumber, location.latitude, location.longitude, props )
 
-    if (data.length == 0) {
+    if (data == null) {
       setLastPageReached(true);
     }
     else {
