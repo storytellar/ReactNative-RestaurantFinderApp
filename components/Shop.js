@@ -115,7 +115,8 @@ const styles = StyleSheet.create({
     paddingLeft: 10
   },
   itemTitle: {
-    fontSize: (0.6923076923 * windowWidth) / 17,
+    // 0.6923076923
+    fontSize: (0.6 * windowWidth) / 17,
     fontWeight: "bold",
     color: "#3C3D47"
   },

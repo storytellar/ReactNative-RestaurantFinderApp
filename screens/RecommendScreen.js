@@ -30,7 +30,6 @@ const windowWidth = Dimensions.get("window").width;
 
 const RecommendScreen = props => {
   // Declare hook
-  const [location, setLocation] = React.useState({ latitude: 0, longitude: 0 });
   const [stores, setStores] = React.useState([]);
   const [food, setFood] = React.useState([]);
   const [banners, setBanners] = React.useState([]);
@@ -45,32 +44,33 @@ const RecommendScreen = props => {
   const [error, setError] = React.useState("");
   const [suggestOption, setSuggestOption] = React.useState(1);
 
+  // Declare global variable
+  let LATITUDE = 0
+  let LONGITUDE = 0
+
   // First running => Get all necessary data
   React.useEffect(() => {
-    getAllData();
+    getAllData()
   }, []);
  
   // Get all data
   const getAllData = async () => {
     setLoadingPage(true);
-    await Promise.all([getSuggestedStores(), getSuggestedFood(), loadBanners(), loadCategory()]);
+    await Promise.all([getSuggestedFood(), loadBanners(), loadCategory(), getSuggestedStores()]);
     setLoadingPage(false);
   };
   
-
   // Get location (latlong) of user through their GPS
-  _getLocationAsync = async () => {
-    let loc;
+  const _getLocationAsync = async () => {
     let { status } = await Permissions.askAsync(Permissions.LOCATION);
     if (status !== "granted") {
       console.log("Permission to access location was denied");
-      setLocation({ latitude: 0, longitude: 0 });
+      LATITUDE = LONGITUDE = 0
     }
     try {
-      location = await Location.getCurrentPositionAsync({enableHighAccuracy: true}); 
-      let lati = location.coords.latitude
-      let long = location.coords.longitude
-      setLocation({latitude: lati, longitude: long});
+      let locRes = await Location.getCurrentPositionAsync({enableHighAccuracy: true}); 
+      LATITUDE = locRes.coords.latitude
+      LONGITUDE = locRes.coords.longitude
     } catch (error) {}
   };
 
@@ -80,14 +80,13 @@ const RecommendScreen = props => {
     setLoadingFood(true);
 
     await _getLocationAsync();
-    console.log("Location: " + location.latitude)
     
     let token = JSON.parse(await AsyncStorage.getItem("@account")).token;
     let data = await getListRecommendFood(
       token,
       pageNumberFood,
-      location.latitude,
-      location.longitude,
+      LATITUDE,
+      LONGITUDE,
       props
     );
 
@@ -113,8 +112,8 @@ const RecommendScreen = props => {
     let data = await getListRecommendStore(
       token,
       pageNumberStore,
-      location.latitude,
-      location.longitude,
+      LATITUDE,
+      LONGITUDE,
       props
     );
 
@@ -145,7 +144,7 @@ const RecommendScreen = props => {
   loadBanners = async () => {
     let token = JSON.parse(await AsyncStorage.getItem("@account")).token;
     let data = await getBanners(token);
-
+    
     if (data != null) {
       setBanners(data);
       return;
@@ -411,6 +410,7 @@ const RecommendScreen = props => {
                 }
                 renderItem={({ item }) => (
                   <ItemDetail
+                    key={item.food_id}
                     title={item.name}
                     vote={item.stars}
                     shop={item.store_name}
@@ -443,11 +443,12 @@ const RecommendScreen = props => {
                 }
                 renderItem={({ item }) => (
                   <Shop
+                    key={item.store_id}
                     vote={item.stars}
                     shop={item.store_name}
                     isLove={item.isFavorite}
                     price={item.avg_price}
-                    distance={item.distance}
+                    distance={Math.round(item.distance * 100) / 100}
                     image={item.imgLink}
                     onPressLove={() => {
                       alert(item.store_id);

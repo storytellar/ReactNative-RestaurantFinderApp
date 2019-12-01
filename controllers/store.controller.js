@@ -112,6 +112,15 @@ const getListFoodByKeyword = async (keyword, page, long, lat, props) => {
 
 //-----------------------------------------------------------
 
+// [STORE] Convert long name to short name with "..."
+const convertLongToShortForStoreName = (str) => {
+  let newStr = str
+  if (newStr.length > 12) {
+    newStr = newStr.slice(0, 12)
+    newStr += "..."
+  }
+  return newStr
+}
 
 // Get all banners
 // Params: String token
@@ -179,6 +188,9 @@ const getListRecommendStore = async (token, page, lat, long, props) => {
   if (data == null) return null
 
   for (let i=0; i<data.length; ++i) {
+    // Process long store name
+    data[i]['store_name'] = convertLongToShortForStoreName(data[i]['store_name'])
+
     // Add new key onPressItem
     sID = data[i]['store_id']
     data[i]['onPressItem'] = (sID) => goDetail(sID)
