@@ -7,6 +7,7 @@ const getStoreDetail = async storeid => {
   data = JSON.parse(data);
   console.log("TOKEN:" + data.token);
 
+  
   // Trả về toàn bộ info làm trang detail shop
   var result = {
     isOK: true, // fetch không bị lỗi
