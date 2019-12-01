@@ -166,7 +166,7 @@ const RecommendScreen = props => {
              return (
               <Category
                 key={cate.concern_id}
-                name={cate.label}
+                name={cate.short_label}
                 onPressButton={() => {
                   _storeData("@keyword", cate.label);
                   props.navigation.navigate("Search");
@@ -220,21 +220,21 @@ const RecommendScreen = props => {
               }
               renderItem={({ item }) => (
                 <Shop
-                  vote={item.vote}
-                  shop={item.shop}
-                  isLove={item.isLove}
-                  price={item.price}
+                  vote={item.stars}
+                  shop={item.store_name}
+                  isLove={item.isFavorite}
+                  price={item.avg_price}
                   distance={item.distance}
-                  image={item.image}
+                  image={item.imgLink}
                   onPressLove={() => {
-                    alert(item.storeID);
+                    alert(item.store_id);
                   }}
                   onPressItem={() => {
-                    item.onPressItem(item.storeID);
+                    item.onPressItem(item.store_id);
                   }}
                 />
               )}
-              keyExtractor={item => item.storeID}
+              keyExtractor={item => item.store_id}
             />
           )
         }
