@@ -11,7 +11,6 @@ import IconOther from "../assets/svg/concern_other.svg";
 
 const Category = props => {
   const { name, onPressButton, id } = props;
-  console.log(id);
   
   return (
     <View>

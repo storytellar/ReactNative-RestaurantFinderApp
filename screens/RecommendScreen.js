@@ -49,25 +49,28 @@ const RecommendScreen = props => {
   React.useEffect(() => {
     getAllData();
   }, []);
-
+ 
   // Get all data
   const getAllData = async () => {
     setLoadingPage(true);
     await Promise.all([getSuggestedStores(), getSuggestedFood(), loadBanners(), loadCategory()]);
     setLoadingPage(false);
   };
+  
 
   // Get location (latlong) of user through their GPS
   _getLocationAsync = async () => {
-    let location;
+    let loc;
     let { status } = await Permissions.askAsync(Permissions.LOCATION);
     if (status !== "granted") {
       console.log("Permission to access location was denied");
       setLocation({ latitude: 0, longitude: 0 });
     }
     try {
-      location = await Location.getCurrentPositionAsync({});
-      setLocation(location.coords);
+      loc = await Location.getCurrentPositionAsync({});
+      let lati = loc.coords.latitude
+      let long = loc.coords.longitude      
+      setLocation({latitude: lati, longitude: long});
     } catch (error) {}
   };
 
@@ -77,7 +80,8 @@ const RecommendScreen = props => {
     setLoadingFood(true);
 
     await _getLocationAsync();
-
+    console.log("ABC" + location.latitude);
+    
     let token = JSON.parse(await AsyncStorage.getItem("@account")).token;
     let data = await getListRecommendFood(
       token,
@@ -104,7 +108,7 @@ const RecommendScreen = props => {
     setLoadingStore(true);
 
     await _getLocationAsync();
-
+    
     let token = JSON.parse(await AsyncStorage.getItem("@account")).token;
     let data = await getListRecommendStore(
       token,
@@ -235,10 +239,6 @@ const RecommendScreen = props => {
                 onPressBanner={goDetail}
                 img={require("../assets/images/banner.jpg")}
               />
-              <Banner
-                onPressBanner={goDetail}
-                img={require("../assets/images/banner.jpg")}
-              />
 
               <View style={{ width: windowWidth / 10 }}></View>
             </ScrollView>
@@ -246,11 +246,11 @@ const RecommendScreen = props => {
 
           {/* List of Category */}
           <View style={styles.CategoryWrapper}>
-            <Category name="Drink" id={-1} />
-            <Category name="Food" id={-1} />
-            <Category name="Veget" id={-1} />
-            <Category name="Other" id={-1} />
-            <Category name="Buffet" id={-1} />
+            <Category name="Drink" id={1} />
+            <Category name="Food" id={2} />
+            <Category name="Veget" id={3} />
+            <Category name="Other" id={4} />
+            <Category name="Buffet" id={5} />
           </View>
 
           <View style={styles.optionButtons}>
@@ -310,160 +310,161 @@ const RecommendScreen = props => {
       </SafeAreaView>
     );
   }
+  else {
+    // Render view
+    return (
+      <SafeAreaView style={styles.container}>
+        <ScrollView
+          contentContainerStyle={styles.containerScrollView}
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Banner list */}
+          <View style={styles.bannerScrollWrapper}>
+            <ScrollView
+              contentContainerStyle={styles.bannerScroll}
+              horizontal={true}
+              showsHorizontalScrollIndicator={false}
+            >
+              <View style={{ width: windowWidth / 10 - 10 }}></View>
+              {banners.map(banner => {
+                return (
+                  <Banner
+                    key={banner.store_id}
+                    onPressBanner={() => goDetail(banner.store_id)}
+                    img={banner.img}
+                  />
+                );
+              })}
+              <View style={{ width: windowWidth / 10 }}></View>
+            </ScrollView>
+          </View>
 
-  // Render view
-  return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView
-        contentContainerStyle={styles.containerScrollView}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Banner list */}
-        <View style={styles.bannerScrollWrapper}>
-          <ScrollView
-            contentContainerStyle={styles.bannerScroll}
-            horizontal={true}
-            showsHorizontalScrollIndicator={false}
-          >
-            <View style={{ width: windowWidth / 10 - 10 }}></View>
-            {banners.map(banner => {
+          {/* Category list */}
+          <View style={styles.CategoryWrapper}>
+            {categories.map(cate => {
               return (
-                <Banner
-                  key={banner.store_id}
-                  onPressBanner={() => goDetail(banner.store_id)}
-                  img={banner.img}
+                <Category
+                  key={cate.concern_id}
+                  id={cate.concern_id}
+                  name={cate.short_label}
+                  onPressButton={() => {
+                    _storeData("@keyword", cate.label);
+                    props.navigation.navigate("Search");
+                  }}
                 />
               );
             })}
-            <View style={{ width: windowWidth / 10 }}></View>
-          </ScrollView>
-        </View>
+          </View>
 
-        {/* Category list */}
-        <View style={styles.CategoryWrapper}>
-          {categories.map(cate => {
-            return (
-              <Category
-                key={cate.concern_id}
-                id={cate.concern_id}
-                name={cate.short_label}
-                onPressButton={() => {
-                  _storeData("@keyword", cate.label);
-                  props.navigation.navigate("Search");
-                }}
+          {/* Classify List (Button) */}
+          <View style={styles.optionButtons}>
+            <TouchableOpacity
+              style={[
+                styles.optionLeftButton,
+                suggestOption === 1 ? styles.optionActiveButton : ""
+              ]}
+              onPress={() => setSuggestOption(1)}
+            >
+              <Text
+                style={[
+                  styles.optionText,
+                  suggestOption === 1 ? styles.optionActiveText : ""
+                ]}
+              >
+                FOOD
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.optionRightButton,
+                suggestOption === 2 ? styles.optionActiveButton : ""
+              ]}
+              onPress={() => setSuggestOption(2)}
+            >
+              <Text
+                style={[
+                  styles.optionText,
+                  suggestOption === 2 ? styles.optionActiveText : ""
+                ]}
+              >
+                STORE
+              </Text>
+            </TouchableOpacity>
+          </View>
+          {
+            (suggestOption == 1) ? 
+            (
+              // Food list
+              <FlatList
+                showsVerticalScrollIndicator={false}
+                style={{ flex: 1 }}
+                contentContainerStyle={{ flex: 1, paddingHorizontal: 15 }}
+                data={food}
+                onEndReached={getSuggestedFood}
+                onEndReachedThreshold={1}
+                ListFooterComponent={
+                  lastFoodPageReached ? (
+                    <Text style={{ textAlign: "center" }}>End of page</Text>
+                  ) : (
+                    <ActivityIndicator size="small" loading={loadingFood} />
+                  )
+                }
+                renderItem={({ item }) => (
+                  <ItemDetail
+                    title={item.name}
+                    vote={item.stars}
+                    shop={item.store_name}
+                    isLove={item.isPopular}
+                    price={item.unitPrice}
+                    image={item.img}
+                    onPressItem={() => {
+                      item.onPressItem(item.store_id);
+                    }}
+                  />
+                )}
+                keyExtractor={item => item.store_id}
               />
-            );
-          })}
-        </View>
-
-        {/* Classify List (Button) */}
-        <View style={styles.optionButtons}>
-          <TouchableOpacity
-            style={[
-              styles.optionLeftButton,
-              suggestOption === 1 ? styles.optionActiveButton : ""
-            ]}
-            onPress={() => setSuggestOption(1)}
-          >
-            <Text
-              style={[
-                styles.optionText,
-                suggestOption === 1 ? styles.optionActiveText : ""
-              ]}
-            >
-              FOOD
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.optionRightButton,
-              suggestOption === 2 ? styles.optionActiveButton : ""
-            ]}
-            onPress={() => setSuggestOption(2)}
-          >
-            <Text
-              style={[
-                styles.optionText,
-                suggestOption === 2 ? styles.optionActiveText : ""
-              ]}
-            >
-              STORE
-            </Text>
-          </TouchableOpacity>
-        </View>
-        {
-          (suggestOption == 1) ? 
-          (
-            // Food list
-            <FlatList
-              showsVerticalScrollIndicator={false}
-              style={{ flex: 1 }}
-              contentContainerStyle={{ flex: 1, paddingHorizontal: 15 }}
-              data={food}
-              onEndReached={getSuggestedFood}
-              onEndReachedThreshold={1}
-              ListFooterComponent={
-                lastFoodPageReached ? (
-                  <Text style={{ textAlign: "center" }}>End of page</Text>
-                ) : (
-                  <ActivityIndicator size="large" loading={loadingFood} />
-                )
-              }
-              renderItem={({ item }) => (
-                <ItemDetail
-                  title={item.name}
-                  vote={item.stars}
-                  shop={item.store_name}
-                  isLove={item.isPopular}
-                  price={item.unitPrice}
-                  image={item.img}
-                  onPressItem={() => {
-                    item.onPressItem(item.store_id);
-                  }}
-                />
-              )}
-              keyExtractor={item => item.store_id}
-            />
-          ) : 
-          (
-            // Store list
-            <FlatList
-              showsVerticalScrollIndicator={false}
-              style={{ flex: 1 }}
-              contentContainerStyle={{ flex: 1, paddingHorizontal: 15 }}
-              data={stores}
-              onEndReached={getSuggestedStores}
-              onEndReachedThreshold={1}
-              ListFooterComponent={
-                lastStorePageReached ? (
-                  <Text style={{ textAlign: "center" }}>End of page</Text>
-                ) : (
-                  <ActivityIndicator size="large" loading={loadingStore} />
-                )
-              }
-              renderItem={({ item }) => (
-                <Shop
-                  vote={item.stars}
-                  shop={item.store_name}
-                  isLove={item.isFavorite}
-                  price={item.avg_price}
-                  distance={item.distance}
-                  image={item.imgLink}
-                  onPressLove={() => {
-                    alert(item.store_id);
-                  }}
-                  onPressItem={() => {
-                    item.onPressItem(item.store_id);
-                  }}
-                />
-              )}
-              keyExtractor={item => item.store_id}
-            />
-          )
-        }
-      </ScrollView>
-    </SafeAreaView>
-  );
+            ) : 
+            (
+              // Store list
+              <FlatList
+                showsVerticalScrollIndicator={false}
+                style={{ flex: 1 }}
+                contentContainerStyle={{ flex: 1, paddingHorizontal: 15, marginTop: 5 }}
+                data={stores}
+                onEndReached={getSuggestedStores}
+                onEndReachedThreshold={1}
+                ListFooterComponent={
+                  lastStorePageReached ? (
+                    <Text style={{ textAlign: "center" }}>End of page</Text>
+                  ) : (
+                    <ActivityIndicator size="small" loading={loadingStore} />
+                  )
+                }
+                renderItem={({ item }) => (
+                  <Shop
+                    vote={item.stars}
+                    shop={item.store_name}
+                    isLove={item.isFavorite}
+                    price={item.avg_price}
+                    distance={item.distance}
+                    image={item.imgLink}
+                    onPressLove={() => {
+                      alert(item.store_id);
+                    }}
+                    onPressItem={() => {
+                      item.onPressItem(item.store_id);
+                    }}
+                  />
+                )}
+                keyExtractor={item => item.store_id}
+              />
+            )
+          }
+        </ScrollView>
+      </SafeAreaView>
+    );
+  }
 };
 
 RecommendScreen.navigationOptions = {

@@ -6,11 +6,12 @@ import {
   Dimensions,
   TouchableOpacity
 } from "react-native";
-import { setRecoveryProps } from "expo/build/ErrorRecovery/ErrorRecovery";
+
+import { saveConcernList, getConcernList } from "../controllers/account.controller";
 
 const windowWidth = Dimensions.get("window").width;
 
-const ConcernScreen = (props) => {
+const ConcernScreen = props => {
   const [isCoffee, setCoffee] = React.useState(false);
   const [isBuffet, setBuffet] = React.useState(false);
   const [isVegetarian, setVegetarian] = React.useState(false);
@@ -19,11 +20,17 @@ const ConcernScreen = (props) => {
   const [isOthers, setOthers] = React.useState(false);
 
   const buildConcern = () => {
-      return {isCoffee, isBuffet, isVegetarian, isAffodable, isBakery, isOthers}
-  }
+    return {
+      isCoffee,
+      isBuffet,
+      isVegetarian,
+      isAffodable,
+      isBakery,
+      isOthers
+    };
+  };
 
   console.log(buildConcern());
-  
 
   return (
     <View style={styles.container}>
@@ -68,8 +75,12 @@ const ConcernScreen = (props) => {
           <Text>Others</Text>
         </TouchableOpacity>
       </View>
-      <TouchableOpacity style={styles.button} onPress={ () => { props.navigation.navigate("Account")}
-      }>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => {
+          props.navigation.navigate("Account");
+        }}
+      >
         <Text style={styles.buttonText}>Save</Text>
       </TouchableOpacity>
     </View>
@@ -93,8 +104,8 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 22,
-    fontWeight: '400',
-    color: "white",
+    fontWeight: "400",
+    color: "white"
   },
   concern: {
     margin: 3,

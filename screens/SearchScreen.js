@@ -72,8 +72,6 @@ const SearchScreen = props => {
     _getLocationAsync();
   }, []);
 
-  console.log(isFood ? "food" : "store");
-
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
