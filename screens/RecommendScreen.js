@@ -311,7 +311,7 @@ const RecommendScreen = props => {
             return (
               <Category
                 key={cate.concern_id}
-                name={cate.label}
+                name={cate.short_label}
                 onPressButton={() => {
                   _storeData("@keyword", cate.label);
                   props.navigation.navigate("Search");
@@ -356,44 +356,52 @@ const RecommendScreen = props => {
             </Text>
           </TouchableOpacity>
         </View>
-        {suggestOption == 1 ? (
-          // Food list
-          <Text>Food</Text>
-        ) : (
-          // Store list
-          <FlatList
-            showsVerticalScrollIndicator={false}
-            style={{ flex: 1 }}
-            contentContainerStyle={{ flex: 1, paddingHorizontal: 15 }}
-            data={stores}
-            onEndReached={getSuggestedStores}
-            onEndReachedThreshold={1}
-            ListFooterComponent={
-              lastPageReached ? (
-                <Text style={{ textAlign: "center" }}>End of page</Text>
-              ) : (
-                <ActivityIndicator size="large" loading={loading} />
-              )
-            }
-            renderItem={({ item }) => (
-              <Shop
-                vote={item.vote}
-                shop={item.shop}
-                isLove={item.isLove}
-                price={item.price}
-                distance={item.distance}
-                image={item.image}
-                onPressLove={() => {
-                  alert(item.storeID);
-                }}
-                onPressItem={() => {
-                  item.onPressItem(item.storeID);
-                }}
-              />
-            )}
-            keyExtractor={item => item.storeID}
-          />
-        )}
+        {
+          (suggestOption == 1) ? 
+          (
+            // Food list
+            <Text>Food</Text> 
+          ) :
+          (
+            // Store list
+            <FlatList
+              showsVerticalScrollIndicator={false}
+              style={{flex: 1}}
+              contentContainerStyle={{flex: 1, paddingHorizontal: 15 }}
+              data={stores}
+              onEndReached={getSuggestedStores}
+              onEndReachedThreshold={1}
+              ListFooterComponent={
+                lastPageReached ? 
+                (
+                  <Text style={{ textAlign: "center" }}>
+                    End of page
+                  </Text>
+                ) : 
+                (
+                  <ActivityIndicator size="large" loading={loading} />
+                )
+              }
+              renderItem={({ item }) => (
+                <Shop
+                  vote={item.stars}
+                  shop={item.store_name}
+                  isLove={item.isFavorite}
+                  price={item.avg_price}
+                  distance={item.distance}
+                  image={item.imgLink}
+                  onPressLove={() => {
+                    alert(item.store_id);
+                  }}
+                  onPressItem={() => {
+                    item.onPressItem(item.store_id);
+                  }}
+                />
+              )}
+              keyExtractor={item => item.store_id}
+            />
+          )
+        }
       </ScrollView>
     </SafeAreaView>
   );
