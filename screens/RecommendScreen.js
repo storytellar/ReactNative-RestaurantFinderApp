@@ -142,6 +142,7 @@ const RecommendScreen = props => {
     );
   }
 
+  // Lazy load data (fake)
   const shopsFAKE = [
     {
       id: "1",
@@ -183,7 +184,8 @@ const RecommendScreen = props => {
     }
   ];
 
-  if (loadingPage)
+  // Lazy load data (fake)
+  if (loadingPage) {
     return (
       <SafeAreaView style={styles.container}>
         <ScrollView
@@ -276,6 +278,7 @@ const RecommendScreen = props => {
         </ScrollView>
       </SafeAreaView>
     );
+  }
 
   // Render view
   return (
