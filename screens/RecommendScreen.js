@@ -66,8 +66,10 @@ const RecommendScreen = props => {
       setLocation({ latitude: 0, longitude: 0 });
     }
     try {
-      location = await Location.getCurrentPositionAsync({});
-      setLocation(location.coords);
+      location = await Location.getCurrentPositionAsync({enableHighAccuracy: true}); 
+      let lati = location.coords.latitude
+      let long = location.coords.longitude
+      setLocation({latitude: lati, longitude: long});
     } catch (error) {}
   };
 
@@ -77,7 +79,7 @@ const RecommendScreen = props => {
     setLoadingFood(true);
 
     await _getLocationAsync();
-
+    
     let token = JSON.parse(await AsyncStorage.getItem("@account")).token;
     let data = await getListRecommendFood(
       token,

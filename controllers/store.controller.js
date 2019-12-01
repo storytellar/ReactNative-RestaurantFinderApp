@@ -179,8 +179,8 @@ const getListRecommendStore = async (token, page, lat, long, props) => {
 
   for (let i=0; i<data.length; ++i) {
     // Add new key onPressItem
-    let storeID = data[i]['store_id']
-    data[i]['onPressItem'] = (storeID) => goDetail(storeID)
+    sID = data[i]['store_id']
+    data[i]['onPressItem'] = (sID) => goDetail(sID)
 
     // Convert key imgLink to object "uri imgLink"
     imgLink = data[i]['imgLink']
@@ -205,8 +205,8 @@ const getListRecommendFood = async (token, page, lat, long, props) => {
 
   for (let i=0; i<data.length; ++i) {
     // Add new key onPressItem
-    let storeID = data[i]['store_id']
-    data[i]['onPressItem'] = (storeID) => goDetail(storeID)
+    sID = data[i]['store_id']
+    data[i]['onPressItem'] = (sID) => goDetail(sID)
 
     // Convert key img to object "uri img"
     img = data[i]['img']
