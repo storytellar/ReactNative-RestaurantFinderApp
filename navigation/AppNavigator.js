@@ -8,6 +8,7 @@ import LoginScreen from '../screens/LoginScreen';
 import SignupScreen from '../screens/SignupScreen';
 import AuthLoadingScreen from '../screens/AuthLoadingScreen';
 import FirstConcernScreen from '../screens/FirstConcernScreen';
+import testScreen from "../screens/_thaiScreen.js";
 
 export default createAppContainer(
   createAnimatedSwitchNavigator({
@@ -17,7 +18,8 @@ export default createAppContainer(
     Login: LoginScreen,
     Main: MainTabNavigator,
     SignUp: SignupScreen,
-    FirstConcern: FirstConcernScreen
+    FirstConcern: FirstConcernScreen,
+    Test: testScreen
   },
   {
     initialRouteName: 'AuthLoading',
