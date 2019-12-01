@@ -81,6 +81,37 @@ const getListStoreByKeyword = async (keyword, page, long, lat, props) => {
   return result;
 };
 
+const getListFoodByKeyword = async (keyword, page, long, lat, props) => {
+  // Trả về array shop sau khi search
+  const goDetail = storeID => {
+    props.navigation.navigate("Detail", { storeID });
+  };
+
+  console.log("getListStoreByKeyword đang chạy:");
+
+  // gửi lên page, long, lat nhận list store
+  var result = [];
+  if (page === 1 && keyword === "Test")
+    for (let i = 0; i < 6; i++) {
+      result.push({
+        itemID: i,
+        title:"Tên món",
+        vote:3,
+        shop:"Quán ăn",
+        isLove:false,
+        price:30,
+        image: { uri: "http://sv.thanhlinhwedding.com/image-app/menu.jpg" },
+        onPressItem: storeID => goDetail(storeID)
+      });
+    }
+
+  return result;
+};
+
+
+//-----------------------------------------------------------
+
+
 // Get all banners
 // Params: String token
 // Result: List of banner | Null
@@ -161,6 +192,7 @@ const getListRecommendStore = async (token, page, lat, long, props) => {
 
 export {  getListRecommendStore, 
           getListStoreByKeyword, 
+          getListFoodByKeyword,
           getStoreDetail,
           getBanners,
           getCategory };
