@@ -214,11 +214,11 @@ const RecommendScreen = props => {
 
           {/* List of Category */}
           <View style={styles.CategoryWrapper}>
-            <Category name="Drink" />
-            <Category name="Food" />
-            <Category name="Veget" />
-            <Category name="Other" />
-            <Category name="Buffet" />
+            <Category name="Drink" id={-1} />
+            <Category name="Food" id={-1} />
+            <Category name="Veget" id={-1} />
+            <Category name="Other" id={-1} />
+            <Category name="Buffet" id={-1} />
           </View>
 
           <View style={styles.optionButtons}>
@@ -313,6 +313,7 @@ const RecommendScreen = props => {
             return (
               <Category
                 key={cate.concern_id}
+                id={cate.concern_id}
                 name={cate.short_label}
                 onPressButton={() => {
                   _storeData("@keyword", cate.label);

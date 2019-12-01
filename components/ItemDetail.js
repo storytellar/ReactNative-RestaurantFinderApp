@@ -11,6 +11,7 @@ import {
 import IconShop from "../assets/svg/shop.svg";
 import IconHeart from "../assets/svg/heart.svg";
 import IconStar from "../assets/svg/star.svg";
+import IconAward from "../assets/svg/award.svg";
 
 const windowWidth = Dimensions.get("window").width;
 
@@ -56,11 +57,7 @@ const Item = props => {
           </View>
           <View style={styles.rightInfo}>
             <View>
-              <IconHeart
-                width={25}
-                height={22}
-                fill={isLove ? "#F66767" : "#B9B9B9"}
-              />
+              <IconAward width={25} height={25} />
             </View>
             <View>
               <Text style={styles.price}>{price}k</Text>
