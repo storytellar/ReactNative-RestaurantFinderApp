@@ -41,7 +41,6 @@ const RecommendScreen = props => {
   const [lastStorePageReached, setLastStorePageReached] = React.useState(false);
   const [pageNumberFood, setPageNumberFood] = React.useState(1);
   const [pageNumberStore, setPageNumberStore] = React.useState(1);
-  const [error, setError] = React.useState("");
   const [suggestOption, setSuggestOption] = React.useState(1);
 
   // Declare global variable
@@ -63,15 +62,16 @@ const RecommendScreen = props => {
   // Get location (latlong) of user through their GPS
   const _getLocationAsync = async () => {
     let { status } = await Permissions.askAsync(Permissions.LOCATION);
+    
     if (status !== "granted") {
       console.log("Permission to access location was denied");
       LATITUDE = LONGITUDE = 0
+      return
     }
-    try {
-      let locRes = await Location.getCurrentPositionAsync({enableHighAccuracy: true}); 
-      LATITUDE = locRes.coords.latitude
-      LONGITUDE = locRes.coords.longitude
-    } catch (error) {}
+    
+    let locRes = await Location.getCurrentPositionAsync({enableHighAccuracy: true}); 
+    LATITUDE = locRes.coords.latitude
+    LONGITUDE = locRes.coords.longitude
   };
 
   // Get all info about FOOD
@@ -165,16 +165,6 @@ const RecommendScreen = props => {
 
     setCategories([]);
   };
-
-  // Catching error
-  if (error.length != 0) {
-    return (
-      <SafeAreaView style={styles.container}>
-        <Text>Error: {error}</Text>
-        <Text>You should re-login for loading data again</Text>
-      </SafeAreaView>
-    );
-  }
 
   // Lazy load data (fake)
   const shopsFAKE = [
@@ -390,6 +380,7 @@ const RecommendScreen = props => {
               </Text>
             </TouchableOpacity>
           </View>
+
           {
             (suggestOption == 1) ? 
             (

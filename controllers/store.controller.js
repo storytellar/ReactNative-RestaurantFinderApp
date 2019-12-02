@@ -55,65 +55,18 @@ const getStoreDetail = async storeid => {
   return result;
 };
 
-const getListStoreByKeyword = async (keyword, page, long, lat, props) => {
-  // Trả về array shop sau khi search
-  const goDetail = storeID => {
-    props.navigation.navigate("Detail", { storeID });
-  };
 
-  console.log("getListStoreByKeyword đang chạy:");
 
-  // gửi lên page, long, lat nhận list store
-  var result = [];
-  if (page === 1 && keyword === "Test")
-    for (let i = 0; i < 6; i++) {
-      result.push({
-        image: { uri: "http://sv.thanhlinhwedding.com/image-app/menu.jpg" },
-        storeID: "123" + i,
-        shop: "test",
-        vote: 5,
-        distance: long === -1 ? "deobiet" : "3.0",
-        isLove: true,
-        price: 30, // 30k
-        onPressItem: storeID => goDetail(storeID)
-      });
-    }
 
-  return result;
-};
 
-const getListFoodByKeyword = async (keyword, page, long, lat, props) => {
-  // Trả về array shop sau khi search
-  const goDetail = storeID => {
-    props.navigation.navigate("Detail", { storeID });
-  };
 
-  console.log("getListStoreByKeyword đang chạy:");
 
-  // gửi lên page, long, lat nhận list store
-  var result = [];
-  if (page === 1 && keyword === "Test")
-    for (let i = 0; i < 6; i++) {
-      result.push({
-        itemID: i,
-        title:"Tên món",
-        vote:3,
-        shop:"Quán ăn",
-        isLove:false,
-        price:30,
-        image: { uri: "http://sv.thanhlinhwedding.com/image-app/menu.jpg" },
-        onPressItem: storeID => goDetail(storeID)
-      });
-    }
-
-  return result;
-};
 
 
 //-----------------------------------------------------------
 
-// [STORE] Convert long name to short name with "..."
-const convertLongToShortForStoreName = (str) => {
+// Convert long name to short name with "..."
+const convertLongToShortName = (str) => {
   let newStr = str
   if (newStr.length > 12) {
     newStr = newStr.slice(0, 12)
@@ -121,6 +74,71 @@ const convertLongToShortForStoreName = (str) => {
   }
   return newStr
 }
+
+// Get store list by keyword
+// Params: String token, String searchType ("store"), String page, String lat, String long, Props
+// Result: Store array | Null
+const getListStoreByKeyword = async (token, searchType, keyword, page, lat, long, props) => {
+  if (searchType != "store") return null
+
+  let uri = `search?type=store&keyword=${keyword}&page=${page}&lat=${lat}&lng=${long}`
+  let data = await restAPI.getMethod(token, uri)
+
+  const goDetail = storeID => {
+    props.navigation.navigate("Detail", { storeID });
+  };
+
+  if (data == null) return null
+
+  for (let i=0; i<data.length; ++i) {
+    // Process long store name
+    data[i]['store_name'] = convertLongToShortName(data[i]['store_name'])
+
+    // Add new key onPressItem
+    sID = data[i]['store_id']
+    data[i]['onPressItem'] = (sID) => goDetail(sID)
+
+    // Convert key imgLink to object "uri imgLink"
+    imgLink = data[i]['imgLink']
+    data[i]['imgLink'] = { uri: imgLink }
+  }
+
+  return data;
+};
+
+// Get food list by keyword
+// Params: String token, String searchType ("food"), String page, String lat, String long, Props
+// Result: Food array | Null
+const getListFoodByKeyword = async (token, searchType, keyword, page, lat, long, props) => {
+  if (searchType != "food") return null
+
+  let uri = `search?type=food&keyword=${keyword}&page=${page}&lat=${lat}&lng=${long}`
+  let data = await restAPI.getMethod(token, uri)
+
+  const goDetail = storeID => {
+    props.navigation.navigate("Detail", { storeID });
+  };
+
+  if (data == null) return null
+
+  for (let i=0; i<data.length; ++i) {
+    // Process long store name
+    data[i]['store_name'] = convertLongToShortName(data[i]['store_name'])
+
+    // Process long food name
+    data[i]['name'] = convertLongToShortName(data[i]['name'])
+
+    // Add new key onPressItem
+    sID = data[i]['store_id']
+    data[i]['onPressItem'] = (sID) => goDetail(sID)
+
+    // Convert key imgLink to object "uri imgLink"
+    img = data[i]['img']
+    data[i]['img'] = { uri: img }
+  }
+
+  return data;
+};
 
 // Get all banners
 // Params: String token
@@ -189,7 +207,7 @@ const getListRecommendStore = async (token, page, lat, long, props) => {
 
   for (let i=0; i<data.length; ++i) {
     // Process long store name
-    data[i]['store_name'] = convertLongToShortForStoreName(data[i]['store_name'])
+    data[i]['store_name'] = convertLongToShortName(data[i]['store_name'])
 
     // Add new key onPressItem
     sID = data[i]['store_id']

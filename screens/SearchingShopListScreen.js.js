@@ -6,9 +6,9 @@ import {
   SafeAreaView,
   Dimensions,
   TouchableOpacity,
-  AsyncStorage,
   FlatList,
-  ActivityIndicator
+  ActivityIndicator,
+  AsyncStorage
 } from "react-native";
 
 import {
@@ -24,141 +24,179 @@ import IconSearch from "../assets/svg/search.svg";
 const windowWidth = Dimensions.get("window").width;
 
 const SearchingShopListScreen = props => {
-  const goDetail = storeID => {
-    props.navigation.navigate("Detail", { storeID, location });
-  };
-
-  const [location, setLocation] = React.useState({ latitude: 0, longitude: 0 });
-  const [errorLocation, setErrorLocation] = React.useState("");
+  // Declare hook
   const [shops, setShops] = React.useState([]);
   const [foods, setFoods] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
-  const [hasErrored, setHasApiError] = React.useState(false);
   const [lastPageReached, setLastPageReached] = React.useState(false);
-  const [value, onChangeText] = React.useState("");
+  const [pageNumber, setPageNumber] = React.useState(1);
 
-  const searchShops = async keyword => {
-    setLoading(true);
-    await _getLocationAsync();
-    newShopList = await getListStoreByKeyword(
-      keyword,
-      1,
-      location.longitude,
-      location.latitude,
-      props
-    );
-    const hasMoreShop = newShopList.length > 0;
-    setShops(shops.concat(newShopList));
-    setLoading(false);
-  };
+  // Declare global variable
+  let LATITUDE = 0
+  let LONGITUDE = 0
 
-  const searchFoods = async keyword => {
-    setLoading(true);
-    await _getLocationAsync();
-    newFoodList = await getListFoodByKeyword(
-      keyword,
-      1,
-      location.longitude,
-      location.latitude,
-      props
-    );
-    const hasMoreFood = newFoodList.length > 0;
-    setFoods(foods.concat(newFoodList));
-    setLoading(false);
-  };
-
+  // First running => Get all necessary data
   React.useEffect(() => {
+    let location = props.navigation.getParam("location");
+    LATITUDE = location.latitude
+    LONGITUDE = location.longitude
+
     let keyword = props.navigation.getParam("keyword");
     let searchType = props.navigation.getParam("searchType");
+
+    // searchType:
+    // 1: Food
+    // 2: Store
+
     if (searchType === 1) {
       searchFoods(keyword);
-    } else {
+    } 
+    else {
       searchShops(keyword);
     }
   }, []);
-  React.useEffect(() => {
-    const b = props.navigation.getParam("location");
-    setLocation(b);
-  }, []);
 
+  // Function for jumping detail page
+  const goDetail = storeID => {
+    props.navigation.navigate("Detail", { storeID });
+  };
+
+  // Searching shops
+  const searchShops = async keyword => {
+    if (lastPageReached) return
+    setLoading(true);
+
+    let token = JSON.parse(await AsyncStorage.getItem("@account")).token;
+    let data = await getListStoreByKeyword(
+      token, 
+      "store", 
+      keyword, 
+      pageNumber, 
+      LATITUDE, 
+      LONGITUDE, 
+      props
+    );
+    
+    if (data == null) setLastPageReached(true)
+    else {
+      let newShopList = shops.concat(data)
+      setShops(newShopList)
+      setPageNumber(pageNumber + 1)
+    }
+
+    setLoading(false);
+  };
+
+  // Searching food
+  const searchFoods = async keyword => {
+    if (lastPageReached) return
+    setLoading(true);
+
+    let token = JSON.parse(await AsyncStorage.getItem("@account")).token;
+    let data = await getListFoodByKeyword(
+      token, 
+      "food", 
+      keyword, 
+      pageNumber, 
+      LATITUDE, 
+      LONGITUDE, 
+      props
+    );
+    
+    if (data == null) setLastPageReached(true)
+    else {
+      let newFoodList = foods.concat(data)
+      setFoods(newFoodList)
+      setPageNumber(pageNumber + 1)
+    }
+
+    setLoading(false);
+  };
+
+  // Render view
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        {/* <Text style={styles.headerText}>Everythings that you need!</Text> */}
         <View style={styles.searchBoxWrapper}>
           <TouchableOpacity
             style={[styles.searchButton, { flexDirection: "row" }]}
             onPress={() => props.navigation.goBack()}
           >
-            <IconSearch width={32} height={32} fill={"white"} />
+            <IconSearch width={28} height={28} fill={"white"} />
             <Text style={{ fontSize: 18, color: "white" }}> Go back</Text>
           </TouchableOpacity>
         </View>
       </View>
       <View style={{ height: 10 }}></View>
-      {props.navigation.getParam("searchType") === 1 ? (
-        <FlatList
-          showsVerticalScrollIndicator={false}
-          style={{ flex: 1 }}
-          contentContainerStyle={{ paddingHorizontal: 15 }}
-          data={foods}
-          onEndReached={searchFoods}
-          onEndReachedThreshold={1}
-          ListFooterComponent={
-            !lastPageReached ? (
-              <Text style={{ textAlign: "center" }}></Text>
-            ) : (
-              <ActivityIndicator size="large" loading={loading} />
-            )
-          }
-          renderItem={({ item }) => (
-            <ItemDetail
-              title={item.title}
-              vote={item.vote}
-              shop={item.shop}
-              isLove={item.isLove}
-              price={item.price}
-              image={item.image}
-              onPressLove={() => alert(item.storeID)}
-              onPressItem={() => {
-                item.onPressItem(item.storeID);
-              }}
-            />
-          )}
-          keyExtractor={item => item.itemID.toString()}
-        />
-      ) : (
-        <FlatList
-          showsVerticalScrollIndicator={false}
-          style={{ flex: 1 }}
-          contentContainerStyle={{ paddingHorizontal: 15 }}
-          data={shops}
-          onEndReached={searchShops}
-          onEndReachedThreshold={1}
-          ListFooterComponent={
-            !lastPageReached ? (
-              <Text style={{ textAlign: "center" }}></Text>
-            ) : (
-              <ActivityIndicator size="large" loading={loading} />
-            )
-          }
-          renderItem={({ item }) => (
-            <Shop
-              vote={item.vote}
-              shop={item.shop}
-              isLove={item.isLove}
-              price={item.price}
-              distance={item.distance}
-              image={item.image}
-              onPressLove={() => alert(item.storeID)}
-              onPressItem={() => {
-                item.onPressItem(item.storeID);
-              }}
-            />
-          )}
-          keyExtractor={item => item.storeID}
-        />
-      )}
+      {
+        props.navigation.getParam("searchType") === 1 ? 
+        (
+          <FlatList
+            showsVerticalScrollIndicator={false}
+            style={{ flex: 1 }}
+            contentContainerStyle={{ paddingHorizontal: 15 }}
+            data={foods}
+            onEndReached={searchFoods}
+            onEndReachedThreshold={1}
+            ListFooterComponent={
+              lastPageReached ? (
+                <Text style={{ textAlign: "center" }}>End of page</Text>
+              ) : (
+                <ActivityIndicator size="small" loading={loading} />
+              )
+            }
+            renderItem={({ item }) => (
+              <ItemDetail
+                key={item.food_id}
+                title={item.name}
+                vote={item.stars}
+                shop={item.store_name}
+                isLove={item.isPopular}
+                price={item.unitPrice}
+                image={item.img}
+                onPressLove={() => alert(item.store_id)}
+                onPressItem={() => {
+                  item.onPressItem(item.store_id);
+                }}
+              />
+            )}
+            keyExtractor={item => item.food_id}
+          />
+        ) : 
+        (
+          <FlatList
+            showsVerticalScrollIndicator={false}
+            style={{ flex: 1 }}
+            contentContainerStyle={{ paddingHorizontal: 15 }}
+            data={shops}
+            onEndReached={searchShops}
+            onEndReachedThreshold={1}
+            ListFooterComponent={
+              lastPageReached ? (
+                <Text style={{ textAlign: "center" }}>End of page</Text>
+              ) : (
+                <ActivityIndicator size="small" loading={loading} />
+              )
+            }
+            renderItem={({ item }) => (
+              <Shop
+                key={item.store_id}
+                vote={item.stars}
+                shop={item.store_name}
+                isLove={item.isFavorite}
+                price={item.avg_price}
+                distance={Math.round(item.distance * 100) / 100}
+                image={item.imgLink}
+                onPressLove={() => alert(item.store_id)}
+                onPressItem={() => {
+                  item.onPressItem(item.store_id);
+                }}
+              />
+            )}
+            keyExtractor={item => item.store_id}
+          />
+        )
+      }
     </SafeAreaView>
   );
 };

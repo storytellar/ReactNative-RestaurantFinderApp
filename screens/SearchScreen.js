@@ -7,58 +7,60 @@ import {
   SafeAreaView,
   Dimensions,
   TouchableOpacity,
-  AsyncStorage,
-  FlatList,
-  ActivityIndicator
+  AsyncStorage
 } from "react-native";
 import { withNavigationFocus } from "react-navigation";
 import * as Location from "expo-location";
 import * as Permissions from "expo-permissions";
-
-import {
-  getListRecommendStore,
-  getListStoreByKeyword
-} from "../controllers/store.controller";
-import Shop from "../components/Shop";
 
 import IconSearch from "../assets/svg/search.svg";
 
 const windowWidth = Dimensions.get("window").width;
 
 const SearchScreen = props => {
-  const [location, setLocation] = React.useState({ latitude: 0, longitude: 0 });
-  const [errorLocation, setErrorLocation] = React.useState("");
+  // Declare hook
   const [value, onChangeText] = React.useState("");
-  const [isFood, setOption] = React.useState(true);
+  const [searchOption, setSearchOption] = React.useState(1);
+  
+  // Declare global variable
+  let LATITUDE = 0
+  let LONGITUDE = 0
 
+  // SearchOption:
+  // 1: Food
+  // 2: Store
+
+  // Function: Get location
   _getLocationAsync = async () => {
     let { status } = await Permissions.askAsync(Permissions.LOCATION);
+
     if (status !== "granted") {
-      setErrorLocation("Permission to access location was denied");
+      console.log("Permission to access location was denied");
+      LATITUDE = LONGITUDE = 0
+      return
     }
-    let location = await Location.getCurrentPositionAsync({});
-    setLocation(location.coords);
+
+    let locRes = await Location.getCurrentPositionAsync({enableHighAccuracy: true}); 
+    LATITUDE = locRes.coords.latitude
+    LONGITUDE = locRes.coords.longitude
   };
 
-  const _storeData = async (key, value) => {
-    try {
-      await AsyncStorage.setItem(key, value);
-    } catch (error) {}
-  };
-
+  // Function: Direct to new screen
   const searchShops = async keyword => {
+    await _getLocationAsync()
     props.navigation.navigate("Searching", {
       keyword: keyword,
-      location: location,
-      searchType: isFood ? 1 : 2
+      location: {latitude: LATITUDE, longitude: LONGITUDE},
+      searchType: searchOption
     });
   };
 
+  // Function: Get keyword when user choose one of categories
   const getKeyword = async key => {
     try {
       const value = await AsyncStorage.getItem(key);
       if (value !== null) {
-        await onChangeText(value);
+        onChangeText(value);
         await AsyncStorage.removeItem(key);
       }
     } catch (error) {}
@@ -68,10 +70,7 @@ const SearchScreen = props => {
     getKeyword("@keyword");
   }
 
-  React.useEffect(() => {
-    _getLocationAsync();
-  }, []);
-
+  // Render view
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -79,7 +78,7 @@ const SearchScreen = props => {
         <View style={styles.searchBoxWrapper}>
           <TextInput
             style={styles.input}
-            placeholder="The coffee house..."
+            placeholder={(searchOption == 1) ? "Food name..." : "Store name..."}
             onChangeText={text => onChangeText(text)}
             value={value}
           />
@@ -96,18 +95,18 @@ const SearchScreen = props => {
 
       <View style={{ width: windowWidth * 0.82, flexDirection: "row" }}>
         <TouchableOpacity
-          style={isFood ? styles.concernSelected : styles.concern}
-          onPress={() => setOption(true)}
+          style={(searchOption == 1) ? styles.concernSelected : styles.concern}
+          onPress={() => setSearchOption(1)}
         >
-          <Text style={isFood ? { color: "white" } : { color: "#DC8D66" }}>
+          <Text style={(searchOption == 1) ? { color: "white" } : { color: "#DC8D66" }}>
             FOOD
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={!isFood ? styles.concernSelected : styles.concern}
-          onPress={() => setOption(false)}
+          style={(searchOption == 2) ? styles.concernSelected : styles.concern}
+          onPress={() => setSearchOption(2)}
         >
-          <Text style={!isFood ? { color: "white" } : { color: "#DC8D66" }}>
+          <Text style={(searchOption == 2) ? { color: "white" } : { color: "#DC8D66" }}>
             STORE
           </Text>
         </TouchableOpacity>
