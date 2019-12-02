@@ -80,6 +80,7 @@ const convertLongToShortName = (str) => {
 // Result: Store array | Null
 const getListStoreByKeyword = async (token, searchType, keyword, page, lat, long, props) => {
   if (searchType != "store") return null
+  if (keyword == null || keyword.length == 0) return null
 
   let uri = `search?type=store&keyword=${keyword}&page=${page}&lat=${lat}&lng=${long}`
   let data = await restAPI.getMethod(token, uri)

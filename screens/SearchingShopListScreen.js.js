@@ -32,37 +32,23 @@ const SearchingShopListScreen = props => {
   const [pageNumber, setPageNumber] = React.useState(1);
 
   // Declare global variable
-  let LATITUDE = 0
-  let LONGITUDE = 0
+  let LATITUDE = (props.navigation.getParam("location")).latitude
+  let LONGITUDE = (props.navigation.getParam("location")).longitude
+  let keyword = props.navigation.getParam("keyword")
+  let searchType = props.navigation.getParam("searchType")
+
+  // searchType:
+  // 1: Food
+  // 2: Store
 
   // First running => Get all necessary data
   React.useEffect(() => {
-    let location = props.navigation.getParam("location");
-    LATITUDE = location.latitude
-    LONGITUDE = location.longitude
-
-    let keyword = props.navigation.getParam("keyword");
-    let searchType = props.navigation.getParam("searchType");
-
-    // searchType:
-    // 1: Food
-    // 2: Store
-
-    if (searchType === 1) {
-      searchFoods(keyword);
-    } 
-    else {
-      searchShops(keyword);
-    }
+    if (searchType === 1) searchFoods();
+    else searchShops();
   }, []);
 
-  // Function for jumping detail page
-  const goDetail = storeID => {
-    props.navigation.navigate("Detail", { storeID });
-  };
-
   // Searching shops
-  const searchShops = async keyword => {
+  const searchShops = async () => {
     if (lastPageReached) return
     setLoading(true);
 
@@ -88,7 +74,7 @@ const SearchingShopListScreen = props => {
   };
 
   // Searching food
-  const searchFoods = async keyword => {
+  const searchFoods = async () => {
     if (lastPageReached) return
     setLoading(true);
 
