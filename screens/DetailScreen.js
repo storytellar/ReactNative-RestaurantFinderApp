@@ -23,47 +23,48 @@ import { ScrollView } from "react-native-gesture-handler";
 
 const windowWidth = Dimensions.get("window").width;
 
-// Truyền vào Params:
-// storeID
 const DetailScreen = props => {
+  // Declare hook
   const [displayData, setDisplayData] = React.useState({});
   const [loading, setLoading] = React.useState(true);
 
-  // B1: Lấy storeID
+  // Get storeID
   const storeID = props.navigation.getParam("storeID", -1);
-  console.log("- storeID: " + storeID);
 
-  if (storeID !== -1) {
-    //Sau khi có STOREID  => FETCH storeID nhận về data
-    React.useEffect(() => {
-      const id = 123;
-      fetchData(id);
-    }, []);
-  } else {
-    console.log("Đéo thấy params storeID");
+  // Check existence of storeID
+  if (storeID === -1) {
+    console.log("This storeID does not exist");
     props.navigation.goBack();
   }
+  else {
+    React.useEffect(() => {
+      loadAllInfo(storeID)
+    }, []);
+  }
 
-  const fetchData = async (storeID) => {
+  // Load all necessary information
+  const loadAllInfo = async (storeID) => {
     setLoading(true);
     const data = await getStoreDetail(storeID);
     setDisplayData(data);
     setLoading(false);
   }
 
+  // Loading...
   if (loading) {
     return (
       <View style={styles.container}>
-          <ActivityIndicator size="large" loading={loading} />
+          <ActivityIndicator size="small" loading={loading} />
       </View>
     )
   }
 
+  // Render view
   return (
     <View style={styles.container}>
       {/* ImageBox */}
       <View style={styles.ImageBox}>
-        <Image style={styles.bigPhoto} source={{ uri: displayData.imageUrl }} />
+        <Image style={styles.bigPhoto} source={displayData.imageUrl} />
       </View>
 
       {/* InfoBox */}
@@ -73,13 +74,12 @@ const DetailScreen = props => {
           <TouchableOpacity
             onPress={() => {
               alert("Thả tim " + storeID);
-              alert(displayData.token);
             }}
           >
             <IconHeart
               width={36}
               height={36}
-              fill={displayData.isFavorite == "true" ? "#F66767" : "#545454"}
+              fill={(displayData.isFavorite == "1") ? "#F66767" : "#545454"}
             />
           </TouchableOpacity>
         </View>
@@ -107,13 +107,13 @@ const DetailScreen = props => {
               data={displayData.menu}
               renderItem={({ item }) => (
                 <Item
-                  title={item.title}
-                  isBestSeller={item.isBestSeller == "true"}
-                  price={item.price}
-                  image={item.image}
+                  title={item.name}
+                  isBestSeller={item.isPopular == "1"}
+                  price={item.unitPrice}
+                  image={item.img}
                 />
               )}
-              keyExtractor={item => item.title}
+              keyExtractor={item => item.food_id}
             />
           </ScrollView>
         </View>
@@ -271,7 +271,6 @@ const styles = StyleSheet.create({
     // borderBottomRightRadius: 40,
     // borderBottmLeftRadius: 40,
     // borderRadius: 40,
-
     alignItems: "center",
     justifyContent: "center"
   },

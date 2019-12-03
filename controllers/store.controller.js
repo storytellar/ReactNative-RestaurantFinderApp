@@ -1,69 +1,48 @@
-import { getLocalData } from "./account.controller";
 let restAPI = require('./restAPI.controller');
 
 const getStoreDetail = async storeid => {
-  console.log(`[getStoreDetail] đang chạy`);
-  data = await getLocalData();
-  data = JSON.parse(data);
-  console.log("TOKEN:" + data.token);
+  let token = JSON.parse(await AsyncStorage.getItem("@account")).token;
 
+  // Get isFavorite for this store
+  // "1": True | "0": False
+  let data = await restAPI.getMethod(token, `store/favorite/check?storeID=${storeid}`)
+  let isFav = "0"
+  if (data != null) isFav = data['isFavStore']
+
+  // Get store info based on storeid
+  data = await restAPI.getMethod(token, `store?storeID=${storeid}`)
+  if (data == null) return null
+  let storeInfo = data
   
-  // Trả về toàn bộ info làm trang detail shop
-  var result = {
-    isOK: true, // fetch không bị lỗi
-    token: data.token,
-    imageUrl: "http://sv.thanhlinhwedding.com/image-app/BigImage.jpg",
-    isFavorite: "true",
-    name: "Otoké chicken",
-    address: "Quận 5, TP. HCM",
-    cashback: "Hoàn tiền 10% từ MOMO",
-    description:
-      "Otoké trong tiếng Hàn Quốc nghĩa là «Wow» hay «Làm sao đây?» Và đó cũng chính là cảm giác mà chúng tôi muốn mang đến cho người yêu ẩm thực khi thưởng thức món gà rán trứ danh.",
-    menu: [
-      {
-        title: "Đùi gà siêu giòn",
-        isBestSeller: "true",
-        price: "30",
-        image: { uri: "http://sv.thanhlinhwedding.com/image-app/menu.jpg" }
-      },
-      {
-        title: "Cơm cánh gà rán",
-        isBestSeller: "true",
-        price: "30",
-        image: { uri: "http://sv.thanhlinhwedding.com/image-app/menu.jpg" }
-      },
-      {
-        title: "Cơm cá phi lê",
-        isBestSeller: "false",
-        price: "30",
-        image: { uri: "http://sv.thanhlinhwedding.com/image-app/menu.jpg" }
-      },
-      {
-        title: "Combo cơm trưa",
-        isBestSeller: "false",
-        price: "30",
-        image: { uri: "http://sv.thanhlinhwedding.com/image-app/menu.jpg" }
-      },
-      {
-        title: "Cơm gà siêu cay",
-        isBestSeller: "false",
-        price: "30",
-        image: { uri: "http://sv.thanhlinhwedding.com/image-app/menu.jpg" }
-      }
-    ]
-  };
-  return result;
+  // Get food info of this store
+  // Key "isPopular" inside each element will be "1" (True) or "0" (False)
+  data = await restAPI.getMethod(token, `store/food?storeID=${storeid}`)
+  if (data == null) return null
+  
+  for (let i=0; i<data.length; ++i) {
+    // Process long food name
+    data[i]['name'] = convertLongToShortName(data[i]['name'])
+
+    // Convert key img to object "uri img"
+    img = data[i]['img']
+    data[i]['img'] = { uri: img }
+  }
+
+  let foodArrayInfo = data
+
+  // Combining above information to one variable
+  let result = {
+    imageUrl: { uri: storeInfo.cover_img },
+    isFavorite: isFav,
+    name: storeInfo.store_name,
+    address: storeInfo.store_add,
+    cashback: storeInfo.cashback,
+    description: "Nothing to show now ...",
+    menu: foodArrayInfo
+  }
+
+  return result
 };
-
-
-
-
-
-
-
-
-
-//-----------------------------------------------------------
 
 // Convert long name to short name with "..."
 const convertLongToShortName = (str) => {
@@ -133,7 +112,7 @@ const getListFoodByKeyword = async (token, searchType, keyword, page, lat, long,
     sID = data[i]['store_id']
     data[i]['onPressItem'] = (sID) => goDetail(sID)
 
-    // Convert key imgLink to object "uri imgLink"
+    // Convert key img to object "uri img"
     img = data[i]['img']
     data[i]['img'] = { uri: img }
   }

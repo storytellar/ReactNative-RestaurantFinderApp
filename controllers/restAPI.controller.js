@@ -37,6 +37,8 @@ restAPI.getMethod = async (token, uri) => {
 // (Example uri: "profile", "concern/rawlist")
 // Result: JSON Object (from server)
 restAPI.postDelMethod = async (token, uri, bodyObject, methodType) => {
+    if (methodType != "POST" && methodType != "DELETE") return null
+
     let URL = "https://a8aeksd7j1.execute-api.us-east-2.amazonaws.com/dev/" + uri
 
     let response = await fetch(
@@ -56,6 +58,18 @@ restAPI.postDelMethod = async (token, uri, bodyObject, methodType) => {
     );
 
     return (await response.json());
+}
+
+// Logging
+// Params: String username, String logContent
+restAPI.logging = async (username, logContent) => {
+    let bodyObject = {
+        username: username,
+        datetime: (new Date()).toString(),
+        log: logContent
+    }
+
+    await restAPI.postDelMethod("", 'logging', bodyObject, "POST")
 }
 
 module.exports = restAPI;
