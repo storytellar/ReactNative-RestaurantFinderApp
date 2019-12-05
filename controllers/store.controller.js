@@ -1,19 +1,22 @@
 let restAPI = require('./restAPI.controller');
 
-const getStoreDetail = async storeid => {
-  let token = JSON.parse(await AsyncStorage.getItem("@account")).token;
-
+// Get store detail
+// Params: String token, String storeid
+// Result: Store (with Food item) array | Null
+const getStoreDetail = async (token, storeid) => {
   // Get isFavorite for this store
   // "1": True | "0": False
   let data = await restAPI.getMethod(token, `store/favorite/check?storeID=${storeid}`)
-  let isFav = "0"
-  if (data != null) isFav = data['isFavStore']
+  let isFav = false
+  if (data != null) {
+    isFav = (data['isFavStore'] == "1") ? true : false
+  }
 
   // Get store info based on storeid
   data = await restAPI.getMethod(token, `store?storeID=${storeid}`)
   if (data == null) return null
   let storeInfo = data
-  
+
   // Get food info of this store
   // Key "isPopular" inside each element will be "1" (True) or "0" (False)
   data = await restAPI.getMethod(token, `store/food?storeID=${storeid}`)

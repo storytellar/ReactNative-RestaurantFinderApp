@@ -89,7 +89,7 @@ const Shop = props => {
               <IconHeart
                 width={25}
                 height={22}
-                fill={isFavorite ? "#F66767" : "#B9B9B9"}
+                fill={(isFavorite == true) ? "#F66767" : "#B9B9B9"}
               />
             </TouchableOpacity>
             <View>

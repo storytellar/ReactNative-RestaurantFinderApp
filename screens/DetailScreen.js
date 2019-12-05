@@ -7,11 +7,15 @@ import {
   Image,
   Dimensions,
   FlatList,
-  ActivityIndicator
+  ActivityIndicator,
+  AsyncStorage
 } from "react-native";
-import { Linking } from "expo";
 
-import { getStoreDetail } from "../controllers/store.controller";
+import {
+  getStoreDetail,
+  addMyNewFavStore,
+  removeMyFavStore
+} from "../controllers/store.controller";
 
 import IconHeart from "../assets/svg/heart.svg";
 import IconLeft from "../assets/svg/left.svg";
@@ -27,6 +31,8 @@ const DetailScreen = props => {
   // Declare hook
   const [displayData, setDisplayData] = React.useState({});
   const [loading, setLoading] = React.useState(true);
+  const [isFavorite, setFavorite] = React.useState(false);
+  const [error, setError] = React.useState("");
 
   // Get storeID
   const storeID = props.navigation.getParam("storeID", -1);
@@ -45,8 +51,15 @@ const DetailScreen = props => {
   // Load all necessary information
   const loadAllInfo = async (storeID) => {
     setLoading(true);
-    const data = await getStoreDetail(storeID);
+    let token = JSON.parse(await AsyncStorage.getItem("@account")).token;
+    let data = await getStoreDetail(token, storeID);
+    if (data == null) {
+      setLoading(false);
+      setError("Server losts some information of this store, so nothing displayed")
+      return
+    }
     setDisplayData(data);
+    setFavorite(data.isFavorite)
     setLoading(false);
   }
 
@@ -54,11 +67,57 @@ const DetailScreen = props => {
   if (loading) {
     return (
       <View style={styles.container}>
-          <ActivityIndicator size="small" loading={loading} />
+        <ActivityIndicator size="small" loading={loading} />
       </View>
     )
   }
 
+  // Error...
+  if (error.length != 0) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.errorText}>{error}</Text>
+        <TouchableOpacity onPress={() => props.navigation.goBack()}>
+          <View style={styles.errorButton}>
+            <Text style={styles.errorTextButton}>BACK</Text>
+          </View>
+        </TouchableOpacity>
+      </View>
+    )
+  }
+
+  // Function: Update value of isFavorite (isLove) store
+  const updateMyFavoriteStore = async () => {
+    let token = JSON.parse(await AsyncStorage.getItem("@account")).token;
+    let result = false
+
+    if (isFavorite == true) {
+      // => Update to false
+      result = await removeMyFavStore(token, storeID)
+    }
+    else {
+      // => Update to true
+      result = await addMyNewFavStore(token, storeID)
+    }
+
+    if (result == true) {
+      setFavorite(!isFavorite)
+    }
+  }
+
+  // Function: Go to Review screen
+  const goReview = (sID) => {
+    props.navigation.navigate("Review", { storeID: sID });
+  };
+
+  // Render header (description of store)
+  const renderHeader = () => {
+    return (
+      <>
+        <Text style={styles.description}>{displayData.description}</Text>
+      </>
+    )
+  }
   // Render view
   return (
     <View style={styles.container}>
@@ -71,18 +130,15 @@ const DetailScreen = props => {
       <View style={styles.InfoBox}>
         {/* FavoriteBox */}
         <View style={styles.FavoriteBox}>
-          <TouchableOpacity
-            onPress={() => {
-              alert("Thả tim " + storeID);
-            }}
-          >
+          <TouchableOpacity onPress={updateMyFavoriteStore}>
             <IconHeart
               width={36}
               height={36}
-              fill={(displayData.isFavorite == "1") ? "#F66767" : "#545454"}
+              fill={(isFavorite == true) ? "#F66767" : "#545454"}
             />
           </TouchableOpacity>
         </View>
+        {/* Main info box (Name, address, cashback) */}
         <View style={styles.shopMainInfo}>
           <Text style={styles.ShopName}>{displayData.name}</Text>
           <View style={styles.shopInfo}>
@@ -90,32 +146,28 @@ const DetailScreen = props => {
               <IconCheckin width={26} height={26} fill={"#D8B05E"} />
               <Text style={styles.miniText}>{displayData.address}</Text>
             </View>
-            <View style={[styles.rowDirection, { paddingTop: 5 }]}>
+            <View style={[styles.rowDirection, { marginTop: 15 }]}>
               <IconOffer width={26} height={26} fill={"#D8B05E"} />
               <Text style={styles.miniText}>{displayData.cashback}</Text>
             </View>
           </View>
         </View>
+        {/* Food item list */}
         <View style={styles.shopAdditionalInfo}>
-          <ScrollView
-            contentContainerStyle={styles.centerAll}
-            showsVerticalScrollIndicator={false}
-          >
-            <Text style={styles.description}>{displayData.description}</Text>
-            <FlatList
-              contentContainerStyle={{ paddingHorizontal: 15 }}
-              data={displayData.menu}
-              renderItem={({ item }) => (
-                <Item
-                  title={item.name}
-                  isBestSeller={item.isPopular == "1"}
-                  price={item.unitPrice}
-                  image={item.img}
-                />
-              )}
-              keyExtractor={item => item.food_id}
-            />
-          </ScrollView>
+          <FlatList
+            contentContainerStyle={{ paddingHorizontal: 15, alignItems: "center", justifyContent: "center" }}
+            data={displayData.menu}
+            ListHeaderComponent={renderHeader}
+            renderItem={({ item }) => (
+              <Item
+                title={item.name}
+                isBestSeller={item.isPopular == "1"}
+                price={item.unitPrice}
+                image={item.img}
+              />
+            )}
+            keyExtractor={item => (item.food_id).toString()}
+          />
         </View>
       </View>
 
@@ -128,23 +180,13 @@ const DetailScreen = props => {
         </TouchableOpacity>
       </View>
 
-      {/* OrderButtonBox */}
-      <View style={styles.OrderButtonBox}>
-        <TouchableOpacity
-          onPress={async () => {
-            var s = displayData.name;
-            var phone =
-              "1900" +
-              (s.charCodeAt(0) + s.charCodeAt(1)) +
-              (s.charCodeAt(0) % 10);
-            Linking.openURL(`tel:${phone}`);
-          }}
-        >
-          <Text style={{ color: "white", fontSize: 22, fontWeight: "bold" }}>
-            Review
-          </Text>
-        </TouchableOpacity>
-      </View>
+      {/* ReviewButtonBox */}
+      <TouchableOpacity 
+        style={styles.ReviewButtonBox}
+        onPress={() => goReview(storeID)}
+      >
+        <Text style={styles.reviewText}>Review</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -204,7 +246,8 @@ const styles = StyleSheet.create({
   },
   rowDirection: {
     flexDirection: "row",
-    alignItems: "flex-end"
+    alignItems: "center",
+    marginVertical: 5
   },
   ShopName: {
     paddingVertical: 10,
@@ -259,7 +302,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center"
   },
-  OrderButtonBox: {
+  ReviewButtonBox: {
     position: "absolute",
     bottom: 0,
     left: 0,
@@ -268,15 +311,34 @@ const styles = StyleSheet.create({
     backgroundColor: "#E9895D",
     borderTopLeftRadius: 15,
     borderTopRightRadius: 15,
-    // borderBottomRightRadius: 40,
-    // borderBottmLeftRadius: 40,
-    // borderRadius: 40,
     alignItems: "center",
     justifyContent: "center"
   },
-  centerAll: {
+  errorText: {
+    fontSize: 16, 
+    fontWeight: "bold",
+    textAlign: "center"
+  },
+  errorButton: {
+    backgroundColor: "#DC8D66", 
+    width: 60, 
+    height: 40, 
+    justifyContent: "center", 
     alignItems: "center",
-    justifyContent: "center"
+    marginTop: 10,
+    borderRadius: 5,
+    borderColor: "#DC8D66",
+    borderWidth: 1
+  },
+  errorTextButton: {
+    fontSize: 16, 
+    fontWeight: "bold",
+    color: "white"
+  },
+  reviewText: {
+    color: "white", 
+    fontSize: 22, 
+    fontWeight: "bold"
   }
 });
 
