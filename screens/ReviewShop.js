@@ -219,7 +219,7 @@ const ReviewShop = props => {
             style={{
               width: windowWidth * 0.8,
               height: 350,
-              backgroundColor: "#537d91",
+              backgroundColor: "#e28a62",
               borderRadius: 20,
 
               shadowColor: "#537d91",
@@ -242,8 +242,8 @@ const ReviewShop = props => {
             >
               <Text
                 style={{
-                  fontSize: 24,
-                  fontWeight: "400",
+                  fontSize: 28,
+                  fontWeight: "600",
                   color: "white",
                   marginTop: 20,
                   marginBottom: 10
@@ -253,19 +253,19 @@ const ReviewShop = props => {
               </Text>
               <View style={{ flexDirection: "row", marginBottom: 20 }}>
                 <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => setReviewStar(1)}>
-                  <IconStar width={40} height={40} fill={reviewStar >=1 ? "#E08E3A" : "black"}/>
+                  <IconStar width={40} height={40} fill={reviewStar >=1 ? "#fffd64" : "#584b42"}/>
                 </TouchableOpacity>
                 <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => setReviewStar(2)}>
-                  <IconStar width={40} height={40}  fill={reviewStar >= 2 ? "#E08E3A" : "black"} />
+                  <IconStar width={40} height={40}  fill={reviewStar >= 2 ? "#fffd64" : "#584b42"} />
                 </TouchableOpacity>
                 <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => setReviewStar(3)}>
-                  <IconStar width={40} height={40} fill={reviewStar >= 3 ? "#E08E3A" : "black"} />
+                  <IconStar width={40} height={40} fill={reviewStar >= 3 ? "#fffd64" : "#584b42"} />
                 </TouchableOpacity>
                 <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => setReviewStar(4)}>
-                  <IconStar width={40} height={40} fill={reviewStar >= 4 ? "#E08E3A" : "black"} />
+                  <IconStar width={40} height={40} fill={reviewStar >= 4 ? "#fffd64" : "#584b42"} />
                 </TouchableOpacity>
                 <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => setReviewStar(5)}>
-                  <IconStar width={40} height={40} fill={reviewStar >= 5 ? "#E08E3A" : "black"} />
+                  <IconStar width={40} height={40} fill={reviewStar >= 5 ? "#fffd64" : "#584b42"} />
                 </TouchableOpacity>
               </View>
               <View
@@ -315,7 +315,7 @@ const ReviewShop = props => {
                   style={{
                     height: 40,
                     width: 100,
-                    backgroundColor: "#ff9d76",
+                    backgroundColor: "#478e8b",
                     justifyContent: "center",
                     alignItems: "center",
                     borderRadius: 10,
