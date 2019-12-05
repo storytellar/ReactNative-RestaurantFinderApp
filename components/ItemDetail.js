@@ -9,7 +9,6 @@ import {
 } from "react-native";
 
 import IconShop from "../assets/svg/shop.svg";
-import IconHeart from "../assets/svg/heart.svg";
 import IconStar from "../assets/svg/star.svg";
 import IconAward from "../assets/svg/award.svg";
 
@@ -68,10 +67,6 @@ const Item = props => {
     </View>
   );
 };
-
-function roundHalf(num) {
-  return Math.round(num * 2) / 2;
-}
 
 const styles = StyleSheet.create({
   border: {

@@ -34,7 +34,7 @@ const RecommendScreen = props => {
   const [food, setFood] = React.useState([]);
   const [banners, setBanners] = React.useState([]);
   const [categories, setCategories] = React.useState([]);
-  const [loadingPage, setLoadingPage] = React.useState(false);
+  const [loadingPage, setLoadingPage] = React.useState(true);
   const [loadingStore, setLoadingStore] = React.useState(false);
   const [loadingFood, setLoadingFood] = React.useState(false);
   const [lastFoodPageReached, setLastFoodPageReached] = React.useState(false);
@@ -55,7 +55,59 @@ const RecommendScreen = props => {
   // Get all data
   const getAllData = async () => {
     setLoadingPage(true);
-    await Promise.all([getSuggestedFood(), loadBanners(), loadCategory(), getSuggestedStores()]);
+
+    await _getLocationAsync();
+
+    let token = JSON.parse(await AsyncStorage.getItem("@account")).token;
+
+    let data_response = await Promise.all([
+      getListRecommendFood(
+        token,
+        pageNumberFood,
+        LATITUDE,
+        LONGITUDE,
+        props
+      ), 
+      getBanners(token), 
+      getCategory(token), 
+      getListRecommendStore(
+        token,
+        pageNumberStore,
+        LATITUDE,
+        LONGITUDE,
+        props
+      )
+    ]);
+
+    let foodRes = data_response[0]
+    let bannersRes = data_response[1]
+    let categoriesRes = data_response[2]
+    let storesRes = data_response[3]
+
+    if (foodRes == null) {
+      setLastFoodPageReached(true);
+    } else {
+      let newFoodList = food.concat(foodRes);
+      setFood(newFoodList);
+      setPageNumberFood(pageNumberFood + 1);
+    }
+
+    if (bannersRes != null) {
+      setBanners(bannersRes);
+    }
+
+    if (categoriesRes != null) {
+      setCategories(categoriesRes);
+    }
+
+    if (storesRes == null) {
+      setLastStorePageReached(true);
+    } else {
+      let newStoreList = stores.concat(storesRes);
+      setStores(newStoreList);
+      setPageNumberStore(pageNumberStore + 1);
+    }
+
     setLoadingPage(false);
   };
   
@@ -166,136 +218,76 @@ const RecommendScreen = props => {
     setCategories([]);
   };
 
-  // Lazy load data (fake)
-  const shopsFAKE = [
-    {
-      id: "1",
-      title: "Đùi gà siêu giòn",
-      vote: 5.0,
-      shop: "Loading...",
-      isLove: false,
-      price: 30,
-      distance: 55,
-      image: require("../assets/images/combosmall.jpg")
-    },
-    {
-      id: "2",
-      vote: 5.0,
-      shop: "Loading...",
-      isLove: false,
-      price: 30,
-      distance: 55,
-      image: require("../assets/images/combosmall.jpg")
-    },
-    {
-      id: "3",
-      vote: 5.0,
-      shop: "Loading...",
-      isLove: false,
-      price: 30,
-      distance: 55,
-      image: require("../assets/images/combosmall.jpg")
-    },
-    {
-      id: "4",
-      title: "Combo cơm trưa",
-      vote: 5.0,
-      shop: "Loading...",
-      isLove: false,
-      price: 30,
-      distance: 55,
-      image: require("../assets/images/combosmall.jpg")
-    }
-  ];
+  // Lazy load: Fake food
+  const fakeFood = () => {
+    return (
+      <>
+        <View style={styles.defaultFoodList}></View>
+        <View style={styles.defaultFoodList}></View>
+        <View style={styles.defaultFoodList}></View>
+        <View style={styles.defaultFoodList}></View>
+      </>
+    )
+  }
+
+  // Lazy load: Fake category
+  const fakeCategory = () => {
+    return (
+      <>
+        <View>
+          <View style={styles.defaultCircleCategory}></View>
+          <View style={styles.defaultTextCategory}></View>
+        </View>
+        <View>
+          <View style={styles.defaultCircleCategory}></View>
+          <View style={styles.defaultTextCategory}></View>
+        </View>
+        <View>
+          <View style={styles.defaultCircleCategory}></View>
+          <View style={styles.defaultTextCategory}></View>
+        </View>
+        <View>
+          <View style={styles.defaultCircleCategory}></View>
+          <View style={styles.defaultTextCategory}></View>
+        </View>
+        <View>
+          <View style={styles.defaultCircleCategory}></View>
+          <View style={styles.defaultTextCategory}></View>
+        </View>
+      </>
+    );
+  }
 
   // Lazy load data (fake)
   if (loadingPage) {
     return (
       <SafeAreaView style={styles.container}>
-        <ScrollView
-          contentContainerStyle={styles.containerScrollView}
-          showsVerticalScrollIndicator={false}
-        >
-          {/* List of banner */}
-          <View style={styles.bannerScrollWrapper}>
-            <ScrollView
-              contentContainerStyle={styles.bannerScroll}
-              horizontal={true}
-              showsHorizontalScrollIndicator={false}
-            >
-              <View style={{ width: windowWidth / 10 - 10 }}></View>
-              <Banner
-                onPressBanner={goDetail}
-                img={require("../assets/images/banner.jpg")}
-              />
+        {/* Banners */}
+        <View style={styles.bannerScrollWrapper}>
+          <View style={{ width: windowWidth / 10 - 10 }}></View>
+          <View style={styles.defaultBanner}></View>
+          <View style={{ width: windowWidth / 10 }}></View>
+        </View>
 
-              <View style={{ width: windowWidth / 10 }}></View>
-            </ScrollView>
-          </View>
+        {/* Categories */}
+        <View style={styles.CategoryWrapper}>
+          {
+            fakeCategory()
+          }
+        </View>
+        
+        {/* Button */}
+        <View style={styles.defaultOptionButtons}>
+          <TouchableOpacity style={[styles.defaultOptionLeftButton, styles.defaultOptionActiveButton ]}></TouchableOpacity>
+          <TouchableOpacity style={styles.defaultOptionRightButton}></TouchableOpacity>
+        </View>
 
-          {/* List of Category */}
-          <View style={styles.CategoryWrapper}>
-            <Category name="Drink" id={1} />
-            <Category name="Food" id={2} />
-            <Category name="Veget" id={3} />
-            <Category name="Other" id={4} />
-            <Category name="Buffet" id={5} />
-          </View>
-
-          <View style={styles.optionButtons}>
-            <TouchableOpacity
-              style={[
-                styles.optionLeftButton,
-                suggestOption === 1 ? styles.optionActiveButton : ""
-              ]}
-              onPress={() => setSuggestOption(1)}
-            >
-              <Text
-                style={[
-                  styles.optionText,
-                  suggestOption === 1 ? styles.optionActiveText : ""
-                ]}
-              >
-                FOOD
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                styles.optionRightButton,
-                suggestOption === 2 ? styles.optionActiveButton : ""
-              ]}
-              onPress={() => setSuggestOption(2)}
-            >
-              <Text
-                style={[
-                  styles.optionText,
-                  suggestOption === 2 ? styles.optionActiveText : ""
-                ]}
-              >
-                STORE
-              </Text>
-            </TouchableOpacity>
-          </View>
-
-          {/* List of Shops */}
-          <FlatList
-            contentContainerStyle={{ paddingHorizontal: 15 }}
-            data={shopsFAKE}
-            renderItem={({ item }) => (
-              <Shop
-                title={item.title}
-                vote={item.vote}
-                shop={item.shop}
-                isLove={item.isLove}
-                price={item.price}
-                distance={item.distance}
-                image={item.image}
-                onPressItem={item.onPressItem}
-              />
-            )}
-            keyExtractor={item => item.id}
-          />
-        </ScrollView>
+        {/* Food list */}
+        <View>
+          {
+            fakeFood()
+          }
+        </View>
       </SafeAreaView>
     );
   }
@@ -517,8 +509,92 @@ const styles = StyleSheet.create({
   optionActiveButton: {
     backgroundColor: "#DC8D66"
   },
-  optionText: { fontSize: 16, color: "#DC8D66", fontWeight: "500" },
-  optionActiveText: { color: "white" }
+  optionText: { 
+    fontSize: 16, 
+    color: "#DC8D66", 
+    fontWeight: "500" 
+  },
+  optionActiveText: { 
+    color: "white" 
+  },
+  defaultBanner: {
+    width: (9.5 * windowWidth) / 12,
+    height: 180,
+    borderRadius: 30,
+    borderColor: "#ECECEC",
+    backgroundColor: '#ECECEC',
+    borderWidth: 1
+  },
+  defaultCircleCategory: {
+    width: 55,
+    height: 55,
+    borderRadius: 100,
+    borderColor: "#ECECEC",
+    backgroundColor: '#ECECEC',
+    borderWidth: 1
+  },
+  defaultTextCategory: {
+    width: 55,
+    height: 15,
+    marginTop: 12,
+    borderColor: "#ECECEC",
+    backgroundColor: '#ECECEC',
+    borderWidth: 1
+  },
+  defaultOptionButtons: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 15,
+    marginBottom: 5
+  },
+  defaultOptionActiveButton: {
+    backgroundColor: "#ECECEC"
+  },
+  defaultOptionLeftButton: {
+    flexDirection: "row",
+    backgroundColor: "white",
+    width: (9.5384615385 * windowWidth) / 12 / 2 - 20,
+    height: 40,
+    borderTopLeftRadius: 20,
+    borderBottomLeftRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 0.5,
+    borderColor: "#ECECEC"
+  },
+  defaultOptionRightButton: {
+    flexDirection: "row",
+    backgroundColor: "#FCFCFC",
+    width: (9.5384615385 * windowWidth) / 12 / 2 - 20,
+    height: 40,
+    borderTopRightRadius: 20,
+    borderBottomRightRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 0.5,
+    borderColor: "#ECECEC"
+  },
+  defaultFoodList: {    
+    marginVertical: 10,
+    width: (9.5384615385 * windowWidth) / 12,
+    height: 100,
+    borderRadius: 15,
+    alignItems: "center",
+    justifyContent: "center",
+
+    shadowColor: "#ECECEC",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+
+    elevation: 8,
+
+    backgroundColor: '#ECECEC',
+  }
 });
 
 export default RecommendScreen;
