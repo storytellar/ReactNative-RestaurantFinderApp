@@ -23,7 +23,7 @@ import IconSearch from "../assets/svg/search.svg";
 
 const windowWidth = Dimensions.get("window").width;
 
-const SearchingShopListScreen = props => {
+const SearchResultScreen = props => {
   // Declare hook
   const [shops, setShops] = React.useState([]);
   const [foods, setFoods] = React.useState([]);
@@ -99,6 +99,48 @@ const SearchingShopListScreen = props => {
     setLoading(false);
   };
 
+    // Render item (for flatlist)
+    const renderAllItemFlatList = ({ item }) => {
+      return (
+        <>
+          {
+            (searchType == 1) ?
+            (
+              // Food list
+              <ItemDetail
+                key={item.food_id}
+                title={item.name}
+                vote={item.stars}
+                shop={item.store_name}
+                isLove={item.isPopular}
+                price={item.unitPrice}
+                image={item.img}
+                onPressItem={() => {
+                  item.onPressItem(item.store_id);
+                }}
+              />
+            ) :
+            (
+              // Store list
+              <Shop
+                key={item.store_id}
+                vote={item.stars}
+                shop={item.store_name}
+                isLove={item.isFavorite}
+                price={item.avg_price}
+                distance={Math.round(item.distance * 100) / 100}
+                image={item.imgLink}
+                onPressLove={item.store_id}
+                onPressItem={() => {
+                  item.onPressItem(item.store_id);
+                }}
+              />
+            )
+          }
+        </>
+      );
+    }
+
   // Render view
   return (
     <SafeAreaView style={styles.container}>
@@ -117,6 +159,7 @@ const SearchingShopListScreen = props => {
       {
         props.navigation.getParam("searchType") === 1 ? 
         (
+          // Food list
           <FlatList
             showsVerticalScrollIndicator={false}
             style={{ flex: 1 }}
@@ -126,30 +169,17 @@ const SearchingShopListScreen = props => {
             onEndReachedThreshold={1}
             ListFooterComponent={
               lastPageReached ? (
-                <Text style={{ textAlign: "center" }}>End of page</Text>
+                <Text style={{ textAlign: "center", marginVertical: 10 }}>End of page</Text>
               ) : (
                 <ActivityIndicator size="small" loading={loading} />
               )
             }
-            renderItem={({ item }) => (
-              <ItemDetail
-                key={item.food_id}
-                title={item.name}
-                vote={item.stars}
-                shop={item.store_name}
-                isLove={item.isPopular}
-                price={item.unitPrice}
-                image={item.img}
-                onPressLove={() => alert(item.store_id)}
-                onPressItem={() => {
-                  item.onPressItem(item.store_id);
-                }}
-              />
-            )}
+            renderItem={renderAllItemFlatList}
             keyExtractor={item => item.food_id}
           />
         ) : 
         (
+          // Store list
           <FlatList
             showsVerticalScrollIndicator={false}
             style={{ flex: 1 }}
@@ -159,26 +189,12 @@ const SearchingShopListScreen = props => {
             onEndReachedThreshold={1}
             ListFooterComponent={
               lastPageReached ? (
-                <Text style={{ textAlign: "center" }}>End of page</Text>
+                <Text style={{ textAlign: "center", marginVertical: 10 }}>End of page</Text>
               ) : (
                 <ActivityIndicator size="small" loading={loading} />
               )
             }
-            renderItem={({ item }) => (
-              <Shop
-                key={item.store_id}
-                vote={item.stars}
-                shop={item.store_name}
-                isLove={item.isFavorite}
-                price={item.avg_price}
-                distance={Math.round(item.distance * 100) / 100}
-                image={item.imgLink}
-                onPressLove={() => alert(item.store_id)}
-                onPressItem={() => {
-                  item.onPressItem(item.store_id);
-                }}
-              />
-            )}
+            renderItem={renderAllItemFlatList}
             keyExtractor={item => item.store_id}
           />
         )
@@ -187,7 +203,7 @@ const SearchingShopListScreen = props => {
   );
 };
 
-SearchingShopListScreen.navigationOptions = {
+SearchResultScreen.navigationOptions = {
   header: null
 };
 
@@ -225,4 +241,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default SearchingShopListScreen;
+export default SearchResultScreen;

@@ -43,9 +43,17 @@ const RecommendScreen = props => {
   const [pageNumberStore, setPageNumberStore] = React.useState(1);
   const [suggestOption, setSuggestOption] = React.useState(1);
 
+  // SearchOption:
+  // 1: Food
+  // 2: Store
+
   // Declare global variable
   let LATITUDE = 0
   let LONGITUDE = 0
+
+  // --------------------------------------------------
+  // NECESSARY FUNCTIONS
+  // --------------------------------------------------
 
   // First running => Get all necessary data
   React.useEffect(() => {
@@ -130,7 +138,7 @@ const RecommendScreen = props => {
   const getSuggestedFood = async () => {
     if (lastFoodPageReached) return;
     setLoadingFood(true);
-
+    
     await _getLocationAsync();
     
     let token = JSON.parse(await AsyncStorage.getItem("@account")).token;
@@ -218,6 +226,133 @@ const RecommendScreen = props => {
     setCategories([]);
   };
 
+  // --------------------------------------------------
+  // RENDER VIEW (FAKE AND OFFICIAL)
+  // --------------------------------------------------
+
+  // Render header (banners, categories, buttons)
+  const renderHeader = () => {
+    return (
+      <>
+        {/* Banner list */}
+        <View style={styles.bannerScrollWrapper}>
+          <ScrollView
+            contentContainerStyle={styles.bannerScroll}
+            horizontal={true}
+            showsHorizontalScrollIndicator={false}
+          >
+            <View style={{ width: windowWidth / 10 - 10 }}></View>
+            {banners.map(banner => {
+              return (
+                <Banner
+                  key={banner.store_id}
+                  onPressBanner={() => goDetail(banner.store_id)}
+                  img={banner.img}
+                />
+              );
+            })}
+            <View style={{ width: windowWidth / 10 }}></View>
+          </ScrollView>
+        </View>
+
+        {/* Category list */}
+        <View style={styles.CategoryWrapper}>
+          {categories.map(cate => {
+            return (
+              <Category
+                key={cate.concern_id}
+                id={cate.concern_id}
+                name={cate.short_label}
+                onPressButton={() => {
+                  _storeData("@keyword", cate.label);
+                  props.navigation.navigate("Search");
+                }}
+              />
+            );
+          })}
+        </View>
+
+        {/* Classify List (Button) */}
+        <View style={styles.optionButtons}>
+          <TouchableOpacity
+            style={[
+              styles.optionLeftButton,
+              suggestOption === 1 ? styles.optionActiveButton : ""
+            ]}
+            onPress={() => setSuggestOption(1)}
+          >
+            <Text
+              style={[
+                styles.optionText,
+                suggestOption === 1 ? styles.optionActiveText : ""
+              ]}
+            >
+              FOOD
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.optionRightButton,
+              suggestOption === 2 ? styles.optionActiveButton : ""
+            ]}
+            onPress={() => setSuggestOption(2)}
+          >
+            <Text
+              style={[
+                styles.optionText,
+                suggestOption === 2 ? styles.optionActiveText : ""
+              ]}
+            >
+              STORE
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </>
+    )
+  }
+
+  // Render item (for flatlist)
+  const renderAllItemFlatList = ({ item }) => {
+    return (
+      <>
+        {
+          (suggestOption == 1) ?
+          (
+            // Food list
+            <ItemDetail
+              key={item.food_id}
+              title={item.name}
+              vote={item.stars}
+              shop={item.store_name}
+              isLove={item.isPopular}
+              price={item.unitPrice}
+              image={item.img}
+              onPressItem={() => {
+                item.onPressItem(item.store_id);
+              }}
+            />
+          ) :
+          (
+            // Store list
+            <Shop
+              key={item.store_id}
+              vote={item.stars}
+              shop={item.store_name}
+              isLove={item.isFavorite}
+              price={item.avg_price}
+              distance={Math.round(item.distance * 100) / 100}
+              image={item.imgLink}
+              onPressLove={item.store_id}
+              onPressItem={() => {
+                item.onPressItem(item.store_id);
+              }}
+            />
+          )
+        }
+      </>
+    );
+  }
+
   // Lazy load: Fake food
   const fakeFood = () => {
     return (
@@ -258,7 +393,7 @@ const RecommendScreen = props => {
     );
   }
 
-  // Lazy load data (fake)
+  // Lazy load: Render fake data
   if (loadingPage) {
     return (
       <SafeAreaView style={styles.container}>
@@ -278,8 +413,8 @@ const RecommendScreen = props => {
         
         {/* Button */}
         <View style={styles.defaultOptionButtons}>
-          <TouchableOpacity style={[styles.defaultOptionLeftButton, styles.defaultOptionActiveButton ]}></TouchableOpacity>
-          <TouchableOpacity style={styles.defaultOptionRightButton}></TouchableOpacity>
+          <View style={[styles.defaultOptionLeftButton, styles.defaultOptionActiveButton ]}></View>
+          <View style={styles.defaultOptionRightButton}></View>
         </View>
 
         {/* Food list */}
@@ -292,160 +427,52 @@ const RecommendScreen = props => {
     );
   }
   else {
-    // Render view
+    // Render official view
     return (
       <SafeAreaView style={styles.container}>
-        <ScrollView
-          contentContainerStyle={styles.containerScrollView}
-          showsVerticalScrollIndicator={false}
-        >
-          {/* Banner list */}
-          <View style={styles.bannerScrollWrapper}>
-            <ScrollView
-              contentContainerStyle={styles.bannerScroll}
-              horizontal={true}
-              showsHorizontalScrollIndicator={false}
-            >
-              <View style={{ width: windowWidth / 10 - 10 }}></View>
-              {banners.map(banner => {
-                return (
-                  <Banner
-                    key={banner.store_id}
-                    onPressBanner={() => goDetail(banner.store_id)}
-                    img={banner.img}
-                  />
-                );
-              })}
-              <View style={{ width: windowWidth / 10 }}></View>
-            </ScrollView>
-          </View>
-
-          {/* Category list */}
-          <View style={styles.CategoryWrapper}>
-            {categories.map(cate => {
-              return (
-                <Category
-                  key={cate.concern_id}
-                  id={cate.concern_id}
-                  name={cate.short_label}
-                  onPressButton={() => {
-                    _storeData("@keyword", cate.label);
-                    props.navigation.navigate("Search");
-                  }}
-                />
-              );
-            })}
-          </View>
-
-          {/* Classify List (Button) */}
-          <View style={styles.optionButtons}>
-            <TouchableOpacity
-              style={[
-                styles.optionLeftButton,
-                suggestOption === 1 ? styles.optionActiveButton : ""
-              ]}
-              onPress={() => setSuggestOption(1)}
-            >
-              <Text
-                style={[
-                  styles.optionText,
-                  suggestOption === 1 ? styles.optionActiveText : ""
-                ]}
-              >
-                FOOD
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                styles.optionRightButton,
-                suggestOption === 2 ? styles.optionActiveButton : ""
-              ]}
-              onPress={() => setSuggestOption(2)}
-            >
-              <Text
-                style={[
-                  styles.optionText,
-                  suggestOption === 2 ? styles.optionActiveText : ""
-                ]}
-              >
-                STORE
-              </Text>
-            </TouchableOpacity>
-          </View>
-
-          {
-            (suggestOption == 1) ? 
-            (
-              // Food list
-              <FlatList
-                showsVerticalScrollIndicator={false}
-                style={{ flex: 1 }}
-                contentContainerStyle={{ flex: 1, paddingHorizontal: 15 }}
-                data={food}
-                onEndReached={getSuggestedFood}
-                onEndReachedThreshold={1}
-                ListFooterComponent={
-                  lastFoodPageReached ? (
-                    <Text style={{ textAlign: "center" }}>End of page</Text>
-                  ) : (
-                    <ActivityIndicator size="small" loading={loadingFood} />
-                  )
-                }
-                renderItem={({ item }) => (
-                  <ItemDetail
-                    key={item.food_id}
-                    title={item.name}
-                    vote={item.stars}
-                    shop={item.store_name}
-                    isLove={item.isPopular}
-                    price={item.unitPrice}
-                    image={item.img}
-                    onPressItem={() => {
-                      item.onPressItem(item.store_id);
-                    }}
-                  />
-                )}
-                keyExtractor={item => item.store_id}
-              />
-            ) : 
-            (
-              // Store list
-              <FlatList
-                showsVerticalScrollIndicator={false}
-                style={{ flex: 1 }}
-                contentContainerStyle={{ flex: 1, paddingHorizontal: 15, marginTop: 5 }}
-                data={stores}
-                onEndReached={getSuggestedStores}
-                onEndReachedThreshold={1}
-                ListFooterComponent={
-                  lastStorePageReached ? (
-                    <Text style={{ textAlign: "center" }}>End of page</Text>
-                  ) : (
-                    <ActivityIndicator size="small" loading={loadingStore} />
-                  )
-                }
-                renderItem={({ item }) => (
-                  <Shop
-                    key={item.store_id}
-                    vote={item.stars}
-                    shop={item.store_name}
-                    isLove={false}
-                    price={item.avg_price}
-                    distance={Math.round(item.distance * 100) / 100}
-                    image={item.imgLink}
-                    onPressLove={() => {
-                      alert(item.store_id);
-                    }}
-                    onPressItem={() => {
-                      item.onPressItem(item.store_id);
-                    }}
-                  />
-                )}
-                keyExtractor={item => item.store_id}
-              />
-            )
-          }
-        </ScrollView>
+        {
+          (suggestOption == 1) ? 
+          (
+            // Food list
+            <FlatList
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={{ paddingHorizontal: 15 }}
+              data={food}
+              ListHeaderComponent={renderHeader}
+              onEndReached={getSuggestedFood}
+              onEndReachedThreshold={0.1}
+              ListFooterComponent={
+                lastFoodPageReached ? (
+                  <Text style={{ textAlign: "center", marginVertical: 10 }}>End of page</Text>
+                ) : (
+                  <ActivityIndicator size="small" loading={loadingFood} />
+                )
+              }
+              renderItem={renderAllItemFlatList}
+              keyExtractor={item => item.store_id}
+            />
+          ) : 
+          (
+            // Store list
+            <FlatList
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={{ paddingHorizontal: 15 }}
+              data={stores}
+              ListHeaderComponent={renderHeader}
+              onEndReached={getSuggestedStores}
+              onEndReachedThreshold={0.1}
+              ListFooterComponent={
+                lastStorePageReached ? (
+                  <Text style={{ textAlign: "center", marginVertical: 10 }}>End of page</Text>
+                ) : (
+                  <ActivityIndicator size="small" loading={loadingStore} />
+                )
+              }
+              renderItem={renderAllItemFlatList}
+              keyExtractor={item => item.store_id}
+            />
+          )
+        }
       </SafeAreaView>
     );
   }
@@ -460,9 +487,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     backgroundColor: "#FFFCFA"
-  },
-  containerScrollView: {
-    alignItems: "center"
   },
   bannerScrollWrapper: {
     height: 200,

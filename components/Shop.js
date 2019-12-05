@@ -5,8 +5,14 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
-  Dimensions
+  Dimensions,
+  AsyncStorage
 } from "react-native";
+
+import {
+  addMyNewFavStore,
+  removeMyFavStore
+} from "../controllers/store.controller";
 
 import IconShop from "../assets/svg/shop.svg";
 import IconHeart from "../assets/svg/heart.svg";
@@ -15,12 +21,35 @@ import IconStar from "../assets/svg/star.svg";
 const windowWidth = Dimensions.get("window").width;
 
 const Shop = props => {
-  var { vote, shop, isLove, price, image, onPressItem, distance, onPressLove } = props;
+  // Declare global variable
+  let { vote, shop, isLove, price, image, onPressItem, distance, onPressLove } = props;
 
+  // Declare hook
+  const [isFavorite, setFavorite] = React.useState(isLove);
+
+  // Parse value of "vote"
   if (parseInt(vote) > 1 && parseInt(vote) <= 5)
     var votes = [...Array(parseInt(vote) - 1).keys()];
   else if (parseInt(vote) > 5) var votes = [...Array(4).keys()];
   else var votes = [...Array(0).keys()];
+
+  // Function: Update value of isFavorite (isLove) store
+  const updateMyFavoriteStore = async () => {
+    let storeID = onPressLove
+    let token = JSON.parse(await AsyncStorage.getItem("@account")).token;
+    let result = false
+
+    if (isFavorite == true) {
+      // => Update to false
+      result = await removeMyFavStore(token, storeID)
+    }
+    else {
+      // => Update to true
+      result = await addMyNewFavStore(token, storeID)
+    }
+
+    if (result == true) setFavorite(!isFavorite)
+  }
 
   return (
     <View style={styles.border}>
@@ -36,7 +65,7 @@ const Shop = props => {
                 <Text style={styles.itemTitle}>{" " + shop}</Text>
               </View>
               <View style={styles.itemVote}>
-                <View style={{ flexDirection: "row" }}>
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
                   <View>
                     <IconStar width={14} height={14} />
                   </View>
@@ -56,11 +85,11 @@ const Shop = props => {
             </View>
           </View>
           <View style={styles.rightInfo}>
-            <TouchableOpacity onPress={onPressLove}>
+            <TouchableOpacity onPress={updateMyFavoriteStore}>
               <IconHeart
                 width={25}
                 height={22}
-                fill={isLove ? "#F66767" : "#B9B9B9"}
+                fill={isFavorite ? "#F66767" : "#B9B9B9"}
               />
             </TouchableOpacity>
             <View>

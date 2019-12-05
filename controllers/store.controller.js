@@ -196,6 +196,9 @@ const getListRecommendStore = async (token, page, lat, long, props) => {
     // Convert key imgLink to object "uri imgLink"
     imgLink = data[i]['imgLink']
     data[i]['imgLink'] = { uri: imgLink }
+
+    // Add new key isFavorite
+    data[i]['isFavorite'] = false
   }
 
   return data
@@ -227,10 +230,38 @@ const getListRecommendFood = async (token, page, lat, long, props) => {
   return data
 };
 
+// Update/Add new store to my favorite list
+// Params: String token, String sID
+// Return: True (Successful) | False (Fail)
+const addMyNewFavStore = async (token, sID) => {
+  let uri = '/store/favorite'
+  let bodyObject = {
+    storeID: sID
+  }
+  let result = await restAPI.postDelMethod(token, uri, bodyObject, "POST")
+  if (result.statusCode == 200) return true
+  return false
+}
+
+// Remove my favorite store from list
+// Params: String token, String sID
+// Return: True (Successful) | False (Fail)
+const removeMyFavStore = async (token, sID) => {
+  let uri = '/store/favorite'
+  let bodyObject = {
+    storeID: sID
+  }
+  let result = await restAPI.postDelMethod(token, uri, bodyObject, "DELETE")
+  if (result.statusCode == 200) return true
+  return false
+}
+
 export {  getListRecommendStore, 
           getListRecommendFood,
           getListStoreByKeyword, 
           getListFoodByKeyword,
           getStoreDetail,
           getBanners,
-          getCategory };
+          getCategory,
+          addMyNewFavStore,
+          removeMyFavStore };
