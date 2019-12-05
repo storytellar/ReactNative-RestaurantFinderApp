@@ -9,7 +9,8 @@ import {
   Image,
   Modal,
   TextInput,
-  Keyboard
+  Keyboard,
+  Platform
 } from "react-native";
 
 import Comment from "../components/Comment";
@@ -86,24 +87,21 @@ const ReviewShop = props => {
     var votes = [...Array(parseInt(vote) - 1).keys()];
   else if (parseInt(vote) > 5) var votes = [...Array(4).keys()];
   else var votes = [...Array(0).keys()];
-  
-  var votesBlack = [...Array(5-parseInt(vote)).keys()];
-  
+
+  var votesBlack = [...Array(5 - parseInt(vote)).keys()];
+
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.GoBackBox}>
-        <TouchableOpacity onPress={() => props.navigation.goBack()}>
-          <View style={styles.GoBackButton}>
-            <IconLeft width={20} height={20} fill={"#545454"} />
-          </View>
-        </TouchableOpacity>
+      <View style={{}}>
+      <TouchableOpacity onPress={() => props.navigation.goBack()}>
+        <View style={styles.GoBackButton}>
+          <IconLeft width={20} height={20} fill={"#545454"} />
+        </View>
+      </TouchableOpacity>
       </View>
       <View style={styles.header}>
         <View style={styles.ImageBox}>
-          <Image
-            style={styles.bigPhoto}
-            source={imgLink}
-          />
+          <Image style={styles.bigPhoto} source={imgLink} />
         </View>
         <View
           style={{ marginLeft: windowWidth * 0.05, justifyContent: "center" }}
@@ -123,23 +121,22 @@ const ReviewShop = props => {
               {vote}
             </Text>
             <View style={{ marginLeft: 10 }}>
-              <IconStar width={14} height={14} fill={'#DC8D66'}/>
+              <IconStar width={14} height={14} fill={"#DC8D66"} />
             </View>
             {votes.map(vote => {
               return (
                 <View style={{ marginLeft: 10 }} key={vote}>
-                  <IconStar width={14} height={14} fill={'#DC8D66'}/>
+                  <IconStar width={14} height={14} fill={"#DC8D66"} />
                 </View>
               );
             })}
             {votesBlack.map(vote => {
               return (
                 <View style={{ marginLeft: 10 }} key={vote}>
-                  <IconStar width={14} height={14} fill={'grey'}/>
+                  <IconStar width={14} height={14} fill={"grey"} />
                 </View>
               );
             })}
-            
           </View>
         </View>
       </View>
@@ -252,20 +249,55 @@ const ReviewShop = props => {
                 REVIEW
               </Text>
               <View style={{ flexDirection: "row", marginBottom: 20 }}>
-                <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => setReviewStar(1)}>
-                  <IconStar width={40} height={40} fill={reviewStar >=1 ? "#fffd64" : "#584b42"}/>
+                <TouchableOpacity
+                  style={{ marginLeft: 10 }}
+                  onPress={() => setReviewStar(1)}
+                >
+                  <IconStar
+                    width={40}
+                    height={40}
+                    fill={reviewStar >= 1 ? "#fffd64" : "#584b42"}
+                  />
                 </TouchableOpacity>
-                <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => setReviewStar(2)}>
-                  <IconStar width={40} height={40}  fill={reviewStar >= 2 ? "#fffd64" : "#584b42"} />
+                <TouchableOpacity
+                  style={{ marginLeft: 10 }}
+                  onPress={() => setReviewStar(2)}
+                >
+                  <IconStar
+                    width={40}
+                    height={40}
+                    fill={reviewStar >= 2 ? "#fffd64" : "#584b42"}
+                  />
                 </TouchableOpacity>
-                <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => setReviewStar(3)}>
-                  <IconStar width={40} height={40} fill={reviewStar >= 3 ? "#fffd64" : "#584b42"} />
+                <TouchableOpacity
+                  style={{ marginLeft: 10 }}
+                  onPress={() => setReviewStar(3)}
+                >
+                  <IconStar
+                    width={40}
+                    height={40}
+                    fill={reviewStar >= 3 ? "#fffd64" : "#584b42"}
+                  />
                 </TouchableOpacity>
-                <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => setReviewStar(4)}>
-                  <IconStar width={40} height={40} fill={reviewStar >= 4 ? "#fffd64" : "#584b42"} />
+                <TouchableOpacity
+                  style={{ marginLeft: 10 }}
+                  onPress={() => setReviewStar(4)}
+                >
+                  <IconStar
+                    width={40}
+                    height={40}
+                    fill={reviewStar >= 4 ? "#fffd64" : "#584b42"}
+                  />
                 </TouchableOpacity>
-                <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => setReviewStar(5)}>
-                  <IconStar width={40} height={40} fill={reviewStar >= 5 ? "#fffd64" : "#584b42"} />
+                <TouchableOpacity
+                  style={{ marginLeft: 10 }}
+                  onPress={() => setReviewStar(5)}
+                >
+                  <IconStar
+                    width={40}
+                    height={40}
+                    fill={reviewStar >= 5 ? "#fffd64" : "#584b42"}
+                  />
                 </TouchableOpacity>
               </View>
               <View
@@ -288,12 +320,12 @@ const ReviewShop = props => {
                   }}
                 />
               </View>
-              <View style={{flexDirection: 'row'}}>
+              <View style={{ flexDirection: "row" }}>
                 <TouchableOpacity
                   style={{
                     justifyContent: "center",
                     alignItems: "center",
-                    marginHorizontal: 15,
+                    marginHorizontal: 15
                   }}
                   onPress={() => {
                     // Press cancel
@@ -358,7 +390,9 @@ ReviewShop.navigationOptions = {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#FFFCFA" },
+  container: { flex: 1, backgroundColor: "#FFFCFA",
+  paddingTop: Platform.OS === 'android' ? 25 : 0
+},
   header: {
     flexDirection: "row",
     marginHorizontal: windowWidth * 0.07,
