@@ -141,7 +141,7 @@ const DetailScreen = props => {
           }}
         >
           <Text style={{ color: "white", fontSize: 22, fontWeight: "bold" }}>
-            Table now !
+            Review
           </Text>
         </TouchableOpacity>
       </View>
