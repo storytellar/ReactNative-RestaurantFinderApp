@@ -15,6 +15,7 @@ import EditInfoAccountScreen from "../screens/EditInfoAccountScreen.js";
 import FavoriteScreen from "../screens/FavoriteScreen.js";
 import ConcernScreen from "../screens/ConcernScreen.js";
 import SearchResultScreen from "../screens/SearchResultScreen.js";
+import ReviewShop from "../screens/ReviewShop.js";
 
 import IconHome from "../assets/svg/home.svg";
 import IconSearch from "../assets/svg/search.svg";
@@ -29,7 +30,8 @@ const config = Platform.select({
 const RecommendStack = createStackNavigator(
   {
     Recommend: RecommendScreen,
-    Detail: DetailScreen
+    Detail: DetailScreen,
+    Review: ReviewShop
   },
   config
 );
@@ -37,7 +39,7 @@ const RecommendStack = createStackNavigator(
 RecommendStack.navigationOptions = ({ navigation }) => {
   // get active route from navigation
   const activeRoute = navigation.state.routes[navigation.state.index].routeName;
-  if (activeRoute === "Detail") {
+  if (activeRoute === "Detail" || activeRoute === "Review") {
     return { tabBarVisible: false };
   }
   return {
@@ -55,7 +57,8 @@ RecommendStack.path = "";
 const SearchStack = createStackNavigator(
   {
     Search: SearchScreen,
-    Searching: SearchResultScreen
+    Searching: SearchResultScreen,
+    Review: ReviewShop
   },
   config
 );
@@ -63,7 +66,7 @@ const SearchStack = createStackNavigator(
 SearchStack.navigationOptions = ({ navigation }) => {
   // get active route from navigation
   const activeRoute = navigation.state.routes[navigation.state.index].routeName;
-  if (activeRoute === "Detail") {
+  if (activeRoute === "Detail" || activeRoute === "Review") {
     return { tabBarVisible: false };
   }
   return {

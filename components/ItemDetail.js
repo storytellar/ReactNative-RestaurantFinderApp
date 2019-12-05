@@ -34,7 +34,7 @@ const Item = props => {
                 <Text style={styles.itemTitle}>{title}</Text>
               </View>
               <View style={styles.itemVote}>
-                <View style={{ flexDirection: "row" }}>
+                <View style={{ flexDirection: "row", alignItems: 'center' }}>
                   <View>
                     <IconStar width={14} height={14} />
                   </View>
