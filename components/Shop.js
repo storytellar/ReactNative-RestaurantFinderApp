@@ -36,8 +36,8 @@ const Shop = props => {
                 <Text style={styles.itemTitle}>{" " + shop}</Text>
               </View>
               <View style={styles.itemVote}>
-                <View style={{ flexDirection: "row" }}>
-                  <View>
+                <View style={{ flexDirection: "row" , alignItems: 'center'}}>
+                  <View >
                     <IconStar width={14} height={14} />
                   </View>
                   {votes.map(vote => {
