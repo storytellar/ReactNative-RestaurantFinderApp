@@ -35,7 +35,8 @@ const getStoreDetail = async (token, storeid) => {
 
   // Combining above information to one variable
   let result = {
-    imageUrl: { uri: storeInfo.cover_img },
+    avatarUrl: { uri: storeInfo.imgLink },
+    coverUrl: { uri: storeInfo.cover_img },
     isFavorite: isFav,
     name: storeInfo.store_name,
     address: storeInfo.store_add,

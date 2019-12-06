@@ -23,7 +23,6 @@ import IconCheckin from "../assets/svg/checkin.svg";
 import IconOffer from "../assets/svg/offer.svg";
 
 import Item from "../components/Item";
-import { ScrollView } from "react-native-gesture-handler";
 
 const windowWidth = Dimensions.get("window").width;
 
@@ -39,8 +38,7 @@ const DetailScreen = props => {
 
   // Check existence of storeID
   if (storeID === -1) {
-    console.log("This storeID does not exist");
-    props.navigation.goBack();
+    setError("This store does not exist, please try later")
   }
   else {
     React.useEffect(() => {
@@ -50,7 +48,6 @@ const DetailScreen = props => {
 
   // Load all necessary information
   const loadAllInfo = async (storeID) => {
-    setLoading(true);
     let token = JSON.parse(await AsyncStorage.getItem("@account")).token;
     let data = await getStoreDetail(token, storeID);
     if (data == null) {
@@ -118,12 +115,13 @@ const DetailScreen = props => {
       </>
     )
   }
+  
   // Render view
   return (
     <View style={styles.container}>
       {/* ImageBox */}
       <View style={styles.ImageBox}>
-        <Image style={styles.bigPhoto} source={displayData.imageUrl} />
+        <Image style={styles.bigPhoto} source={displayData.coverUrl} />
       </View>
 
       {/* InfoBox */}
