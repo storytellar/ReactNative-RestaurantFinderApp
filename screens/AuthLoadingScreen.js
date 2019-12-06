@@ -12,7 +12,8 @@ class AuthLoadingScreen extends React.Component {
     loginData = await getLocalData();
     // this.props.navigation.navigate(loginData ? "Recommend" : "Login");
     // Quick develop Front-end
-    this.props.navigation.navigate("Review", { storeID: 123 });
+    this.props.navigation.navigate("Detail", { storeID: "1017932899811403512" });
+    // this.props.navigation.navigate("Concern");
   };
 
   render() {

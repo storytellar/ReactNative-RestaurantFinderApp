@@ -103,8 +103,14 @@ const DetailScreen = props => {
   }
 
   // Function: Go to Review screen
-  const goReview = (sID) => {
-    props.navigation.navigate("Review", { storeID: sID });
+  const goReview = (sID, shopname, avatar, stars) => {
+    let obj = {
+      storeID: sID,
+      shopName: shopname,
+      avatarUrl: avatar,
+      stars: stars
+    }
+    props.navigation.navigate("Review", obj);
   };
 
   // Render header (description of store)
@@ -115,7 +121,7 @@ const DetailScreen = props => {
       </>
     )
   }
-  
+
   // Render view
   return (
     <View style={styles.container}>
@@ -181,7 +187,7 @@ const DetailScreen = props => {
       {/* ReviewButtonBox */}
       <TouchableOpacity 
         style={styles.ReviewButtonBox}
-        onPress={() => goReview(storeID)}
+        onPress={() => goReview(storeID, displayData.name, displayData.avatarUrl, displayData.stars)}
       >
         <Text style={styles.reviewText}>Review</Text>
       </TouchableOpacity>

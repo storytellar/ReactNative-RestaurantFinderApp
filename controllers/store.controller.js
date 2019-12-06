@@ -38,6 +38,7 @@ const getStoreDetail = async (token, storeid) => {
     avatarUrl: { uri: storeInfo.imgLink },
     coverUrl: { uri: storeInfo.cover_img },
     isFavorite: isFav,
+    stars: storeInfo.stars,
     name: storeInfo.store_name,
     address: storeInfo.store_add,
     cashback: storeInfo.cashback,
@@ -260,6 +261,33 @@ const removeMyFavStore = async (token, sID) => {
   return false
 }
 
+// Get review list of one store
+// Params: String token, String sID
+// Return: Review array | Null
+const getReviewListOfStore = async (token, sID) => {
+  let uri = `/store/review?storeID=${sID}`
+  let data = await restAPI.getMethod(token, uri)
+
+  if (data == null) return null
+
+  return data
+}
+
+// Post my review for current store
+// Params: String token, String sID, String comment, Int stars
+// Return: True (Successful) | False (Fail)
+const postMyReviewForStore = async (token, sID, comment, stars) => {
+  let uri = '/store/review/rating'
+  let bodyObject = {
+    storeID: sID,
+    comment: comment,
+    stars: stars
+  }
+  let result = await restAPI.postDelMethod(token, uri, bodyObject, "POST")
+  if (result.statusCode == 200) return true
+  return false
+}
+
 export {  getListRecommendStore, 
           getListRecommendFood,
           getListStoreByKeyword, 
@@ -268,4 +296,6 @@ export {  getListRecommendStore,
           getBanners,
           getCategory,
           addMyNewFavStore,
-          removeMyFavStore };
+          removeMyFavStore,
+          getReviewListOfStore,
+          postMyReviewForStore };

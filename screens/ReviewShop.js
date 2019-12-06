@@ -7,12 +7,18 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Dimensions,
+  AsyncStorage,
   Image,
   Modal,
   TextInput,
   Keyboard,
   Platform
 } from "react-native";
+
+import {
+  getReviewListOfStore,
+  postMyReviewForStore
+} from "../controllers/store.controller";
 
 import Comment from "../components/Comment";
 import IconLeft from "../assets/svg/left.svg";
@@ -27,15 +33,57 @@ const ReviewShop = props => {
   const [reviewStar, setReviewStar] = React.useState(0);
   const [boxStatus, setBoxStatus] = React.useState(false);
   const [loading, setLoading] = React.useState(true);
+  const [reviewList, setReviewList] = React.useState([]);
+  const [allowReview, setAllowReview] = React.useState(false);
+  const [modalNote, setModalNote] = React.useState("You can only review one time, and a review must have stars and comment")
 
-  // First running => Get all necessary data
+  // Declare global variable
+  let storeID = props.navigation.getParam("storeID")
+  let shopName = props.navigation.getParam("shopName")
+  let vote = props.navigation.getParam("stars")
+  let avatarUrl = props.navigation.getParam("avatarUrl")
+
+  // First running => Get review list of this store
   React.useEffect(() => {
-    loadAllInfo()
+    loadReviewList()
   }, []);
 
-  // Load all necessary information
-  const loadAllInfo = async (storeID) => {
-    // Write something here
+  // Load review list of this store
+  const loadReviewList = async () => {
+    setLoading(true);
+
+    let account = JSON.parse(await AsyncStorage.getItem("@account"))
+    let token = account.token;
+    let username = account.info.username
+
+    let data = await getReviewListOfStore(token, storeID)
+    if (data == null) {
+      setAllowReview(true);
+      setLoading(false);
+      return
+    }
+
+    let userPosition = -1
+    for (let i=0; i<data.length; ++i) {
+      let obj = data[i]
+      if (username == obj.username) {
+        userPosition = i
+        break
+      }
+    }
+
+    if (userPosition == -1) {
+      setAllowReview(true);
+    }
+    else
+      if (userPosition != 0) {
+        let obj = data[0]
+        let userObj = data[userPosition]
+        data[0] = userObj
+        data[userPosition] = obj
+      }
+
+    setReviewList(data)
     setLoading(false);
   }
 
@@ -47,70 +95,13 @@ const ReviewShop = props => {
       </View>
     )
   }
-  
-  // Data for rendering
-  vote = 4.9;
-  shopName = "Otoké Chicken Siêu Ngon Bổ Rẻ";
-  avatarUrl = {
-    uri: "http://sv.thanhlinhwedding.com/image-app/BigImage.jpg"
-  };
-  commentList = [
-    {
-      id: "1",
-      name: "Lê Hồng Thái",
-      comment:
-        "Món ăn thì ngon, quán trang trí rất đẹp, giá cả phải chăng... Có lẽ mình sẽ quay lại lần nữa để thưởng thức!"
-    },
-    {
-      id: "2",
-      name: "Lê Hồng A",
-      comment:
-        "Món ăn thì ngon, quán trang trí rất đẹp, giá cả phải chăng... Có lẽ mình sẽ quay lại lần nữa để thưởng thức!"
-    },
-    {
-      id: "3",
-      name: "Lê Hồng B",
-      comment:
-        "Món ăn thì ngon, quán trang trí rất đẹp, giá cả phải chăng... Có lẽ mình sẽ quay lại lần nữa để thưởng thức!"
-    },
-    {
-      id: "4",
-      name: "Lê Hồng C",
-      comment:
-        "Món ăn thì ngon, quán trang trí rất đẹp, giá cả phải chăng... Có lẽ mình sẽ quay lại lần nữa để thưởng thức!"
-    },
-    {
-      id: "5",
-      name: "Lê Hồng B",
-      comment:
-        "Món ăn thì ngon, quán trang trí rất đẹp, giá cả phải chăng... Có lẽ mình sẽ quay lại lần nữa để thưởng thức!"
-    },
-    {
-      id: "6",
-      name: "Lê Hồng B",
-      comment:
-        "Món ăn thì ngon, quán trang trí rất đẹp, giá cả phải chăng... Có lẽ mình sẽ quay lại lần nữa để thưởng thức!"
-    },
-    {
-      id: "7",
-      name: "Lê Hồng B",
-      comment:
-        "Món ăn thì ngon, quán trang trí rất đẹp, giá cả phải chăng... Có lẽ mình sẽ quay lại lần nữa để thưởng thức!"
-    },
-    {
-      id: "8",
-      name: "Lê Hồng B",
-      comment:
-        "Món ăn thì ngon, quán trang trí rất đẹp, giá cả phải chăng... Có lẽ mình sẽ quay lại lần nữa để thưởng thức!"
-    }
-  ];
 
   // Parse value of "vote"
   if (parseInt(vote) > 1 && parseInt(vote) <= 5)
     var votes = [...Array(parseInt(vote) - 1).keys()];
   else if (parseInt(vote) > 5) var votes = [...Array(4).keys()];
   else var votes = [...Array(0).keys()];
-
+  
   var votesBlack = [...Array(5 - parseInt(vote)).keys()];
 
   // Render stars of rating modal
@@ -122,6 +113,7 @@ const ReviewShop = props => {
           arr.map((val) => {
             return (
               <TouchableOpacity
+                key={val}
                 style={{ marginLeft: 10 }}
                 onPress={() => setReviewStar(val)}
               >
@@ -136,6 +128,25 @@ const ReviewShop = props => {
         }
       </>
     )
+  }
+
+  // Post new review
+  const postNewReview = async () => {
+    if (reviewStar == 0 || text.length == 0) {
+      setModalNote("Stars and comment must not be empty, please review something")
+      return
+    }
+
+    let token = JSON.parse(await AsyncStorage.getItem("@account")).token;
+    let result = await postMyReviewForStore(token, storeID, text, reviewStar)
+    if (!result) {
+      setModalNote("Server is not responding now, please try again later")
+      return
+    }
+
+    setAllowReview(false)
+    setBoxStatus(false);
+    await loadReviewList()
   }
 
   // Render view
@@ -200,67 +211,75 @@ const ReviewShop = props => {
           </View>
         </View>
       </View>
-
+        
       {/* Button to open Modalbox for reviewing (Only run when user hasn't review current store before) */}
-      <View style={{ alignItems: "center", marginVertical: 10 }}>
-        <View
-          style={{
-            height: 80,
-            width: windowWidth * 0.87,
-            backgroundColor: "#ffdbc5",
-            borderRadius: 10,
-            alignItems: "center",
-            flexDirection: "row"
-          }}
-        >
-          <View style={{ flex: 0.6 }}>
-            <Text
+      {
+        (allowReview == true) ?
+        (
+          <View style={{ alignItems: "center", marginVertical: 10 }}>
+            <View
               style={{
-                marginHorizontal: windowWidth * 0.05,
-                color: "#181D2E",
-                fontSize: 16,
-                fontWeight: "400"
-              }}
-            >
-              Have you come here?
-            </Text>
-          </View>
-          <View style={{ flex: 0.4 }}>
-            <TouchableOpacity
-              style={{
-                height: 40,
-                width: 120,
-                backgroundColor: "#ff9d76",
-                justifyContent: "center",
+                height: 80,
+                width: windowWidth * 0.87,
+                backgroundColor: "#ffdbc5",
+                borderRadius: 10,
                 alignItems: "center",
-                borderRadius: 10
+                flexDirection: "row"
               }}
-              onPress={() => setBoxStatus(true)}
             >
-              <Text
-                style={{ color: "#FFFCFA", fontSize: 16, fontWeight: "400" }}
-              >
-                Review
-              </Text>
-            </TouchableOpacity>
+              <View style={{ flex: 0.6 }}>
+                <Text
+                  style={{
+                    marginHorizontal: windowWidth * 0.05,
+                    color: "#181D2E",
+                    fontSize: 16,
+                    fontWeight: "400"
+                  }}
+                >
+                  Have you come here?
+                </Text>
+              </View>
+              <View style={{ flex: 0.4 }}>
+                <TouchableOpacity
+                  style={{
+                    height: 40,
+                    width: 120,
+                    backgroundColor: "#ff9d76",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    borderRadius: 10
+                  }}
+                  onPress={() => setBoxStatus(true)}
+                >
+                  <Text
+                    style={{ color: "#FFFCFA", fontSize: 16, fontWeight: "400" }}
+                  >
+                    Review
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
           </View>
-        </View>
-      </View>
+        ) :
+        (
+          <></>
+        )
+      }
 
       {/* Comment list */}
       <View style={{ alignItems: "center", flex: 1, marginTop: 20 }}>
         <View style={styles.comments}>
           <FlatList
             showsVerticalScrollIndicator={false}
-            data={commentList}
+            data={reviewList}
             renderItem={({ item }) => (
               <Comment
-                key={item.comment}
+                key={item.review_id}
                 name={item.name}
-                comment={item.comment}
+                comment={item.text}
               />
             )}
-            keyExtractor={item => item.id}
+            keyExtractor={item => item.review_id}
           />
         </View>
       </View>
@@ -279,11 +298,18 @@ const ReviewShop = props => {
               <Text style={styles.modalTitle}>
                 REVIEW
               </Text>
+              
+              {/* Note */}
+              <Text style={styles.modalNote}>
+                {
+                  modalNote
+                }
+              </Text>
 
               {/* Modal: Stars */}
               <View style={styles.modalStarsBox}>
                 {
-                  renderStarsModal
+                  renderStarsModal()
                 }
               </View>
 
@@ -307,10 +333,7 @@ const ReviewShop = props => {
                 {/* Modal: Cancel button */}
                 <TouchableOpacity
                   style={styles.modalCancelButton}
-                  onPress={() => { 
-                    // Press cancel review
-                    setBoxStatus(false); 
-                  }}
+                  onPress={() => setBoxStatus(false)}
                 >
                   <Text style={styles.modalCancelText}>
                     Cancel
@@ -320,10 +343,7 @@ const ReviewShop = props => {
                 {/* Modal: Send button */}
                 <TouchableOpacity
                   style={styles.modalSendButton}
-                  onPress={() => {
-                    // Press Send review
-                    setBoxStatus(false);
-                  }}
+                  onPress={() => postNewReview()}
                 >
                   <Text style={styles.modalSendText}>
                     Send
@@ -423,7 +443,7 @@ const styles = StyleSheet.create({
   },
   modalOverview: {
     width: windowWidth * 0.8,
-    height: 350,
+    height: 400,
     backgroundColor: "#e28a62",
     borderRadius: 20,
 
@@ -446,8 +466,17 @@ const styles = StyleSheet.create({
     fontSize: 28, 
     fontWeight: "600", 
     color: "white", 
-    marginTop: 20, 
-    marginBottom: 10 
+    marginTop: 15, 
+    marginBottom: 5 
+  },
+  modalNote: {
+    fontSize: 14,
+    fontStyle: "italic",
+    color: "white",
+    marginTop: 5,
+    marginBottom: 15,
+    marginHorizontal: 10,
+    textAlign: "center"
   },
   modalStarsBox: { 
     flexDirection: "row", 
