@@ -411,7 +411,12 @@ const styles = StyleSheet.create({
 
     elevation: 1
   },
-  loadingContainer, modalContainer: {
+  loadingContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  modalContainer: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center"
