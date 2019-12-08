@@ -35,6 +35,8 @@ const Shop = props => {
 
   // Function: Update value of isFavorite (isLove) store
   const updateMyFavoriteStore = async () => {
+    setFavorite(!isFavorite)
+    
     let storeID = onPressLove
     let token = JSON.parse(await AsyncStorage.getItem("@account")).token;
     let result = false
@@ -48,7 +50,7 @@ const Shop = props => {
       result = await addMyNewFavStore(token, storeID)
     }
 
-    if (result == true) setFavorite(!isFavorite)
+    // if (result == true) setFavorite(!isFavorite)
   }
 
   return (

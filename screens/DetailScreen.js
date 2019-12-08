@@ -88,6 +88,8 @@ const DetailScreen = props => {
 
   // Function: Update value of isFavorite (isLove) store
   const updateMyFavoriteStore = async () => {
+    setFavorite(!isFavorite);
+    
     let token = JSON.parse(await AsyncStorage.getItem("@account")).token;
     let result = false;
 
@@ -99,9 +101,9 @@ const DetailScreen = props => {
       result = await addMyNewFavStore(token, storeID);
     }
 
-    if (result == true) {
-      setFavorite(!isFavorite);
-    }
+    // if (result == true) {
+    //   setFavorite(!isFavorite);
+    // }
   };
 
   // Function: Go to Review screen
@@ -174,8 +176,10 @@ const DetailScreen = props => {
               </Text>
             </TouchableOpacity>
             <View style={[styles.rowDirection, { marginTop: 15 }]}>
+              <View style={{marginTop: -15}}>
               <IconOffer width={26} height={26} fill={"#D8B05E"} />
-              <Text style={styles.miniText}>{displayData.cashback}</Text>
+              </View>
+              <Text style={[styles.miniText]}>{displayData.cashback}</Text>
             </View>
           </View>
         </TouchableOpacity>

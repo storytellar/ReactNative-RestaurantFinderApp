@@ -59,7 +59,10 @@ const RecommendScreen = props => {
   React.useEffect(() => {
     getAllData()
   }, []);
- 
+  console.log("THAITHAI");
+  
+  console.log(stores);
+  
   // Get all data
   const getAllData = async () => {
     setLoadingPage(true);
@@ -233,7 +236,7 @@ const RecommendScreen = props => {
   // Render header (banners, categories, buttons)
   const renderHeader = () => {
     return (
-      <>
+      <View style={styles.container}>
         {/* Banner list */}
         <View style={styles.bannerScrollWrapper}>
           <ScrollView
@@ -307,14 +310,14 @@ const RecommendScreen = props => {
             </Text>
           </TouchableOpacity>
         </View>
-      </>
+      </View>
     )
   }
 
   // Render item (for flatlist)
   const renderAllItemFlatList = ({ item }) => {
     return (
-      <>
+      <View style={styles.container}>
         {
           (suggestOption == 1) ?
           (
@@ -349,7 +352,7 @@ const RecommendScreen = props => {
             />
           )
         }
-      </>
+      </View>
     );
   }
 
@@ -436,7 +439,6 @@ const RecommendScreen = props => {
             // Food list
             <FlatList
               showsVerticalScrollIndicator={false}
-              contentContainerStyle={{ paddingHorizontal: 15 }}
               data={food}
               ListHeaderComponent={renderHeader}
               onEndReached={getSuggestedFood}
@@ -456,7 +458,7 @@ const RecommendScreen = props => {
             // Store list
             <FlatList
               showsVerticalScrollIndicator={false}
-              contentContainerStyle={{ paddingHorizontal: 15 }}
+              contentContainerStyle={{}}
               data={stores}
               ListHeaderComponent={renderHeader}
               onEndReached={getSuggestedStores}
@@ -497,7 +499,7 @@ const styles = StyleSheet.create({
     width: (9.5384615385 * windowWidth) / 12,
     height: 85,
     flexDirection: "row",
-    justifyContent: "space-between"
+    justifyContent: "space-between",
   },
   optionButtons: {
     flexDirection: "row",

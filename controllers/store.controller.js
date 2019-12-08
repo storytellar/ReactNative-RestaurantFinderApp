@@ -42,7 +42,7 @@ const getStoreDetail = async (token, storeid) => {
     name: storeInfo.store_name,
     address: storeInfo.store_add,
     cashback: storeInfo.cashback,
-    description: "Nothing to show now ...",
+    description: storeInfo.description,
     menu: foodArrayInfo
   }
 
@@ -129,7 +129,13 @@ const getListFoodByKeyword = async (token, searchType, keyword, page, lat, long,
 // Params: String token
 // Result: List of banner | Null
 const getBanners = async token => {
-  return (await restAPI.getMethod(token, "banner"));
+  let data = await restAPI.getMethod(token, "banner")
+  if (data == null) return null
+  for (let i=0; i<data.length; ++i) {
+    img = data[i]['img']
+    data[i]['img'] = { uri: img }
+  }
+  return data;
 };
 
 // Get all categories
