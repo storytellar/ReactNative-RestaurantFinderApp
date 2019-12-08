@@ -89,7 +89,7 @@ const DetailScreen = props => {
   // Function: Update value of isFavorite (isLove) store
   const updateMyFavoriteStore = async () => {
     setFavorite(!isFavorite);
-    
+
     let token = JSON.parse(await AsyncStorage.getItem("@account")).token;
     let result = false;
 
@@ -119,11 +119,13 @@ const DetailScreen = props => {
 
   // Render header (description of store)
   const renderHeader = () => {
-    return (
-      <>
-        <Text style={styles.description}>{displayData.description}</Text>
-      </>
-    );
+    if (displayData.description)
+      return (
+        <>
+          <Text style={styles.description}>{displayData.description}</Text>
+        </>
+      );
+    return <></>;
   };
 
   // Convert to a readable address
@@ -176,8 +178,8 @@ const DetailScreen = props => {
               </Text>
             </TouchableOpacity>
             <View style={[styles.rowDirection, { marginTop: 15 }]}>
-              <View style={{marginTop: -15}}>
-              <IconOffer width={26} height={26} fill={"#D8B05E"} />
+              <View style={{ marginTop: -15 }}>
+                <IconOffer width={26} height={26} fill={"#D8B05E"} />
               </View>
               <Text style={[styles.miniText]}>{displayData.cashback}</Text>
             </View>
@@ -294,7 +296,7 @@ const styles = StyleSheet.create({
   ShopName: {
     paddingVertical: 10,
     width: (windowWidth * 75) / 100,
-    fontSize: 36,
+    fontSize: 28,
     fontWeight: "bold",
     color: "#3C3D46"
   },
