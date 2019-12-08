@@ -131,12 +131,14 @@ const DetailScreen = props => {
   // Convert to a readable address
   const convertToShortAddress = fulladdr => {
     if (fulladdr) {
-      let start = fulladdr.indexOf("Q") + 5;
-      let end = fulladdr.indexOf(",", start);
-      let district = fulladdr.substring(start, end);
-      let result = "Quận " + district + ", TP. Hồ Chí Minh";
-      return result;
+      // let start = fulladdr.indexOf("Q") + 5;
+      // let end = fulladdr.indexOf(",", start);
+      // let district = fulladdr.substring(start, end);
+      // let result = "Quận " + district + ", TP. Hồ Chí Minh";
+      // return result;
+      return fulladdr;
     }
+    return  "";
   };
 
   // Render view
