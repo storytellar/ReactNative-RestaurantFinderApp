@@ -33,32 +33,35 @@ const DetailScreen = props => {
   const [isFavorite, setFavorite] = React.useState(false);
   const [error, setError] = React.useState("");
 
+  const [isLargeView, setIsLargeView] = React.useState(false);
+
   // Get storeID
   const storeID = props.navigation.getParam("storeID", -1);
 
   // Check existence of storeID
   if (storeID === -1) {
-    setError("This store does not exist, please try later")
-  }
-  else {
+    setError("This store does not exist, please try later");
+  } else {
     React.useEffect(() => {
-      loadAllInfo(storeID)
+      loadAllInfo(storeID);
     }, []);
   }
 
   // Load all necessary information
-  const loadAllInfo = async (storeID) => {
+  const loadAllInfo = async storeID => {
     let token = JSON.parse(await AsyncStorage.getItem("@account")).token;
     let data = await getStoreDetail(token, storeID);
     if (data == null) {
       setLoading(false);
-      setError("Server losts some information of this store, so nothing displayed")
-      return
+      setError(
+        "Server losts some information of this store, so nothing displayed"
+      );
+      return;
     }
     setDisplayData(data);
-    setFavorite(data.isFavorite)
+    setFavorite(data.isFavorite);
     setLoading(false);
-  }
+  };
 
   // Loading...
   if (loading) {
@@ -66,7 +69,7 @@ const DetailScreen = props => {
       <View style={styles.container}>
         <ActivityIndicator size="small" loading={loading} />
       </View>
-    )
+    );
   }
 
   // Error...
@@ -80,27 +83,26 @@ const DetailScreen = props => {
           </View>
         </TouchableOpacity>
       </View>
-    )
+    );
   }
 
   // Function: Update value of isFavorite (isLove) store
   const updateMyFavoriteStore = async () => {
     let token = JSON.parse(await AsyncStorage.getItem("@account")).token;
-    let result = false
+    let result = false;
 
     if (isFavorite == true) {
       // => Update to false
-      result = await removeMyFavStore(token, storeID)
-    }
-    else {
+      result = await removeMyFavStore(token, storeID);
+    } else {
       // => Update to true
-      result = await addMyNewFavStore(token, storeID)
+      result = await addMyNewFavStore(token, storeID);
     }
 
     if (result == true) {
-      setFavorite(!isFavorite)
+      setFavorite(!isFavorite);
     }
-  }
+  };
 
   // Function: Go to Review screen
   const goReview = (sID, shopname, avatar, stars) => {
@@ -109,7 +111,7 @@ const DetailScreen = props => {
       shopName: shopname,
       avatarUrl: avatar,
       stars: stars
-    }
+    };
     props.navigation.navigate("Review", obj);
   };
 
@@ -119,47 +121,72 @@ const DetailScreen = props => {
       <>
         <Text style={styles.description}>{displayData.description}</Text>
       </>
-    )
-  }
+    );
+  };
+
+  // Convert to a readable address
+  const convertToShortAddress = fulladdr => {
+    if (fulladdr) {
+      let start = fulladdr.indexOf("Q") + 5;
+      let end = fulladdr.indexOf(",", start);
+      let district = fulladdr.substring(start, end);
+      let result = "Quận " + district + ", TP. Hồ Chí Minh";
+      return result;
+    }
+  };
 
   // Render view
   return (
     <View style={styles.container}>
       {/* ImageBox */}
-      <View style={styles.ImageBox}>
+      <View style={[styles.ImageBox, isLargeView ? { height: "30%" } : {}]}>
         <Image style={styles.bigPhoto} source={displayData.coverUrl} />
       </View>
 
       {/* InfoBox */}
-      <View style={styles.InfoBox}>
+      <View style={[styles.InfoBox, isLargeView ? { height: "80%" } : {}]}>
         {/* FavoriteBox */}
         <View style={styles.FavoriteBox}>
           <TouchableOpacity onPress={updateMyFavoriteStore}>
             <IconHeart
               width={36}
               height={36}
-              fill={(isFavorite == true) ? "#F66767" : "#545454"}
+              fill={isFavorite == true ? "#F66767" : "#545454"}
             />
           </TouchableOpacity>
         </View>
         {/* Main info box (Name, address, cashback) */}
-        <View style={styles.shopMainInfo}>
+        <TouchableOpacity
+          style={styles.shopMainInfo}
+          onPress={() => setIsLargeView(!isLargeView)}
+        >
           <Text style={styles.ShopName}>{displayData.name}</Text>
           <View style={styles.shopInfo}>
-            <View style={styles.rowDirection}>
+            <TouchableOpacity
+              style={styles.rowDirection}
+              onPress={() =>
+                alert("Link to this address using Map: " + displayData.address)
+              }
+            >
               <IconCheckin width={26} height={26} fill={"#D8B05E"} />
-              <Text style={styles.miniText}>{displayData.address}</Text>
-            </View>
+              <Text style={styles.miniText}>
+                {convertToShortAddress(displayData.address)}
+              </Text>
+            </TouchableOpacity>
             <View style={[styles.rowDirection, { marginTop: 15 }]}>
               <IconOffer width={26} height={26} fill={"#D8B05E"} />
               <Text style={styles.miniText}>{displayData.cashback}</Text>
             </View>
           </View>
-        </View>
+        </TouchableOpacity>
         {/* Food item list */}
         <View style={styles.shopAdditionalInfo}>
           <FlatList
-            contentContainerStyle={{ paddingHorizontal: 15, alignItems: "center", justifyContent: "center" }}
+            contentContainerStyle={{
+              paddingHorizontal: 15,
+              alignItems: "center",
+              justifyContent: "center"
+            }}
             data={displayData.menu}
             ListHeaderComponent={renderHeader}
             renderItem={({ item }) => (
@@ -170,7 +197,7 @@ const DetailScreen = props => {
                 image={item.img}
               />
             )}
-            keyExtractor={item => (item.food_id).toString()}
+            keyExtractor={item => item.food_id.toString()}
           />
         </View>
       </View>
@@ -185,9 +212,16 @@ const DetailScreen = props => {
       </View>
 
       {/* ReviewButtonBox */}
-      <TouchableOpacity 
+      <TouchableOpacity
         style={styles.ReviewButtonBox}
-        onPress={() => goReview(storeID, displayData.name, displayData.avatarUrl, displayData.stars)}
+        onPress={() =>
+          goReview(
+            storeID,
+            displayData.name,
+            displayData.avatarUrl,
+            displayData.stars
+          )
+        }
       >
         <Text style={styles.reviewText}>Review</Text>
       </TouchableOpacity>
@@ -206,7 +240,7 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     width: "100%",
-    height: "50%"
+    height: "50%" // fix đây 50 -> 30
   },
   bigPhoto: {
     width: "100%",
@@ -219,7 +253,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     width: "100%",
-    height: "60%",
+    height: "60%", // fix đây 60 -> 80
     backgroundColor: "white",
     borderTopLeftRadius: 40,
     borderTopRightRadius: 40,
@@ -319,15 +353,15 @@ const styles = StyleSheet.create({
     justifyContent: "center"
   },
   errorText: {
-    fontSize: 16, 
+    fontSize: 16,
     fontWeight: "bold",
     textAlign: "center"
   },
   errorButton: {
-    backgroundColor: "#DC8D66", 
-    width: 60, 
-    height: 40, 
-    justifyContent: "center", 
+    backgroundColor: "#DC8D66",
+    width: 60,
+    height: 40,
+    justifyContent: "center",
     alignItems: "center",
     marginTop: 10,
     borderRadius: 5,
@@ -335,13 +369,13 @@ const styles = StyleSheet.create({
     borderWidth: 1
   },
   errorTextButton: {
-    fontSize: 16, 
+    fontSize: 16,
     fontWeight: "bold",
     color: "white"
   },
   reviewText: {
-    color: "white", 
-    fontSize: 22, 
+    color: "white",
+    fontSize: 22,
     fontWeight: "bold"
   }
 });

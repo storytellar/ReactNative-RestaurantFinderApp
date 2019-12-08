@@ -274,12 +274,12 @@ const ReviewShop = props => {
             data={reviewList}
             renderItem={({ item }) => (
               <Comment
-                key={item.review_id}
+                key={item.review_id.toString()}
                 name={item.name}
                 comment={item.text}
               />
             )}
-            keyExtractor={item => item.review_id}
+            keyExtractor={item => item.review_id.toString()}
           />
         </View>
       </View>
