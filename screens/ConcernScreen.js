@@ -4,85 +4,135 @@ import {
   Text,
   StyleSheet,
   Dimensions,
-  TouchableOpacity
+  TouchableOpacity,
+  ActivityIndicator,
+  FlatList
 } from "react-native";
 
-import { saveConcernList, getConcernList } from "../controllers/account.controller";
+import { 
+  getRawConcernList,
+  updateMyConcernList,
+  getMyConcernList 
+} from "../controllers/account.controller";
 
 const windowWidth = Dimensions.get("window").width;
 
 const ConcernScreen = props => {
-  const [isCoffee, setCoffee] = React.useState(false);
-  const [isBuffet, setBuffet] = React.useState(false);
-  const [isVegetarian, setVegetarian] = React.useState(false);
-  const [isAffodable, setAffodable] = React.useState(false);
-  const [isBakery, setBakery] = React.useState(false);
-  const [isOthers, setOthers] = React.useState(false);
+  const [loading, setLoading] = React.useState(true);
+  const [concernList, setConcernList] = React.useState([]);
+  const [refreshFlatlist, setRefreshFlatlist] = React.useState(false);
 
-  const buildConcern = () => {
-    return {
-      isCoffee,
-      isBuffet,
-      isVegetarian,
-      isAffodable,
-      isBakery,
-      isOthers
-    };
-  };
+  React.useEffect(() => {
+    getAllDataFunc()
+  }, []);
 
-  console.log(buildConcern());
+  const getAllDataFunc = async () => {
+    setLoading(true)
+
+    let data = await getRawConcernList()
+    if (data == null) {
+      setLoading(false); 
+      return
+    }
+
+    for (let i=0; i<data.length; ++i) {
+      data[i]['isActive'] = false
+    }
+
+    let myConcern = await getMyConcernList()
+    if (myConcern == null) {
+      setLoading(false)
+      setConcernList(data)
+      return
+    }
+
+    for (let i=0; i<data.length; ++i) {
+      for (let j=0; j<myConcern.length; ++j) {
+        if (data[i]['concern_id'] == myConcern[j]['concern_id']) {
+          data[i]['isActive'] = true
+        }
+      }
+    }
+
+    setConcernList(data)
+    setLoading(false)
+  }
+
+  const updateMyConcernListFunc = async () => {
+    let resArr = []
+    concernList.map((ele) => {
+      if (ele.isActive == true) {
+        resArr.push(ele.concern_id)
+      }
+    })
+    await updateMyConcernList(resArr)
+    props.navigation.navigate("Account")
+  }
+
+  const updateConcernStatus = (item) => {
+    console.log(item)
+    let data = concernList
+    let posEle = parseInt(item.concern_id) - 1
+    let isActive = data[posEle]['isActive']
+    data[posEle]['isActive'] = !isActive
+    setRefreshFlatlist(!refreshFlatlist)
+  }
+
+  const renderAllItemFlatList = ({ item }) => {
+    return (
+      <TouchableOpacity
+        key={item.concern_id}
+        style={(item.isActive == true) ? styles.concernSelected : styles.concern}
+        onPress={() => updateConcernStatus(item)}
+      >
+        <Text>{item.label}</Text>
+      </TouchableOpacity>
+    )
+  }
+
+  const renderHeader = () => {
+    return (
+      <View style={{ marginBottom: 30, marginTop: 30 }}>
+        <Text style={{ fontSize: 36, fontWeight: "200", color: "#3C3D47" }}>
+          What do you like?
+        </Text>
+      </View>
+    )
+  }
+
+  const renderFooter = () => {
+    return (
+      <View style={{ marginTop: 30 }}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={updateMyConcernListFunc}
+        >
+          <Text style={styles.buttonText}>Save</Text>
+        </TouchableOpacity>
+      </View>
+    )
+  }
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="small" loading={loading} />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
-      <Text style={{ fontSize: 36, fontWeight: "200", color: "#3C3D47" }}>
-        What do you like?
-      </Text>
-      <View style={{ marginBottom: 50, marginTop: 20 }}>
-        <TouchableOpacity
-          style={isCoffee ? styles.concernSelected : styles.concern}
-          onPress={() => setCoffee(!isCoffee)}
-        >
-          <Text>Coffee & Dessert</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={isBuffet ? styles.concernSelected : styles.concern}
-          onPress={() => setBuffet(!isBuffet)}
-        >
-          <Text>Buffet/Luxury Restaurant</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={isVegetarian ? styles.concernSelected : styles.concern}
-          onPress={() => setVegetarian(!isVegetarian)}
-        >
-          <Text>Vegetarian</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={isAffodable ? styles.concernSelected : styles.concern}
-          onPress={() => setAffodable(!isAffodable)}
-        >
-          <Text>Affodable Restaurant</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={isBakery ? styles.concernSelected : styles.concern}
-          onPress={() => setBakery(!isBakery)}
-        >
-          <Text>Bakery</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={isOthers ? styles.concernSelected : styles.concern}
-          onPress={() => setOthers(!isOthers)}
-        >
-          <Text>Others</Text>
-        </TouchableOpacity>
-      </View>
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => {
-          props.navigation.navigate("Account");
-        }}
-      >
-        <Text style={styles.buttonText}>Save</Text>
-      </TouchableOpacity>
+      <FlatList
+        contentContainerStyle={styles.container}
+        ListHeaderComponent={renderHeader}
+        ListFooterComponent={renderFooter}
+        showsVerticalScrollIndicator={false}
+        data={concernList}
+        extraData={refreshFlatlist}
+        renderItem={renderAllItemFlatList}
+        keyExtractor={item => item.concern_id}
+      />
     </View>
   );
 };

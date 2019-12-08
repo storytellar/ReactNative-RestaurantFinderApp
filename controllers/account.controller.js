@@ -1,4 +1,6 @@
 import { AsyncStorage } from "react-native";
+let restAPI = require('./restAPI.controller');
+
 //
 // AsyncStorage uses:
 // @account: data of user logon
@@ -142,4 +144,37 @@ const logout = async () => {
   } catch (error) {}
 };
 
-export { getLocalData, newLogin, newSignup, logout, saveProfile, getProfile };
+const getRawConcernList = async () => {
+  let token = JSON.parse(await AsyncStorage.getItem("@account")).token;
+  let data = await restAPI.getMethod(token, "concern/rawlist")
+  if (data == null) return null
+  return data;
+}
+
+const updateMyConcernList = async (concernIDList) => {
+  let token = JSON.parse(await AsyncStorage.getItem("@account")).token;
+  let bodyObject = {
+    concernIDList: concernIDList
+  }
+  let result = await restAPI.postDelMethod(token, "concern/mylist", bodyObject, "POST")
+  if (result.statusCode == 200) return true
+  return false
+}
+
+const getMyConcernList = async () => {
+  let token = JSON.parse(await AsyncStorage.getItem("@account")).token;
+  let data = await restAPI.getMethod(token, "concern/mylist")
+  if (data == null) return null
+  return data;
+}
+
+export { 
+          getLocalData, 
+          newLogin, 
+          newSignup, 
+          logout, 
+          saveProfile, 
+          getProfile,
+          getRawConcernList,
+          updateMyConcernList,
+          getMyConcernList };

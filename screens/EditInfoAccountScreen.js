@@ -26,10 +26,7 @@ const EditInfoAccountScreen = props => {
   const [ageValue, onChangeAge] = React.useState("");
   const [jobValue, onChangeJob] = React.useState("");
   const [cityValue, onChangeCity] = React.useState("");
-  const [incomeValue, onChangeIncome] = React.useState("");
-
-  console.log(localAccountInfo.token);
-  
+  const [incomeValue, onChangeIncome] = React.useState("");  
 
   const getAccountData = async () => {
     setLoading(true);

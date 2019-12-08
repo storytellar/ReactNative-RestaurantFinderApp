@@ -59,9 +59,6 @@ const RecommendScreen = props => {
   React.useEffect(() => {
     getAllData()
   }, []);
-  console.log("THAITHAI");
-  
-  console.log(stores);
   
   // Get all data
   const getAllData = async () => {
@@ -458,7 +455,6 @@ const RecommendScreen = props => {
             // Store list
             <FlatList
               showsVerticalScrollIndicator={false}
-              contentContainerStyle={{}}
               data={stores}
               ListHeaderComponent={renderHeader}
               onEndReached={getSuggestedStores}
