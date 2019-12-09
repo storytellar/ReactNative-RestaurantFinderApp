@@ -237,6 +237,7 @@ const getListRecommendFood = async (token, page, lat, long, props) => {
     img = data[i]['img']
     data[i]['img'] = { uri: img }
   }
+  
 
   return data
 };

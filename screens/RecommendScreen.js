@@ -42,7 +42,7 @@ const RecommendScreen = props => {
   const [pageNumberFood, setPageNumberFood] = React.useState(1);
   const [pageNumberStore, setPageNumberStore] = React.useState(1);
   const [suggestOption, setSuggestOption] = React.useState(1);
-
+  
   // SearchOption:
   // 1: Food
   // 2: Store
@@ -86,7 +86,7 @@ const RecommendScreen = props => {
         props
       )
     ]);
-
+    
     let foodRes = data_response[0]
     let bannersRes = data_response[1]
     let categoriesRes = data_response[2]
@@ -149,6 +149,7 @@ const RecommendScreen = props => {
       LONGITUDE,
       props
     );
+    
 
     if (data == null) {
       setLastFoodPageReached(true);
