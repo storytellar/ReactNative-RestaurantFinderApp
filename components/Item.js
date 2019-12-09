@@ -47,7 +47,7 @@ const Item = props => {
               </View>
               <View style={styles.itemShop}>
                 {/* <IconShop width={25} height={22} fill={"#8B8B8B"} /> */}
-                <Text style={styles.price}>{price + " VND"}</Text>
+                <Text style={styles.price}>{price + ".000 VND"}</Text>
               </View>
             </View>
           </View>

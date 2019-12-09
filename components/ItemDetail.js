@@ -9,17 +9,24 @@ import {
 } from "react-native";
 
 import IconShop from "../assets/svg/shop.svg";
-import IconStar from "../assets/svg/star.svg";
+import IconStar from "../assets/svg/rate.svg";
 import IconAward from "../assets/svg/award.svg";
 
 const windowWidth = Dimensions.get("window").width;
 
 const Item = props => {
   const { title, vote, shop, isLove, price, image, onPressItem } = props;
+  
+  const shortenString = (str) => {
+    if (str.length >= 20)
+      return str.slice(0,17) + "..."
+    return str;
+  }
   if (parseInt(vote) > 1 && parseInt(vote) <= 5)
     var votes = [...Array(parseInt(vote) - 1).keys()];
   else if (parseInt(vote) > 5) var votes = [...Array(4).keys()];
   else var votes = [...Array(0).keys()];
+  var votesBlack = [...Array(5 - parseInt(vote)).keys()];
 
   return (
     <View style={styles.border}>
@@ -31,17 +38,26 @@ const Item = props => {
             </View>
             <View style={styles.midInfo}>
               <View>
-                <Text style={styles.itemTitle}>{title}</Text>
+                <Text style={styles.itemTitle}>{shortenString(title)}</Text>
               </View>
               <View style={styles.itemVote}>
                 <View style={{ flexDirection: "row", alignItems: 'center' }}>
                   <View>
-                    <IconStar width={14} height={14} />
+                    <IconStar width={14} height={14} fill={"#DC8D66"} />
                   </View>
-                  {votes.map(vote => {
+                  {// Orange votes (icon)
+                    votes.map(vote => {
                     return (
-                      <View key={vote}>
-                        <IconStar width={14} height={14} />
+                      <View style={{ marginLeft: 1 }} key={vote}>
+                        <IconStar width={14} height={14} fill={"#DC8D66"} />
+                      </View>
+                    );
+                  })}
+                  {// Black votes (icon)
+                  votesBlack.map(vote => {
+                    return (
+                      <View style={{ marginLeft: 1 }} key={vote}>
+                        <IconStar width={14} height={14} fill={"grey"} />
                       </View>
                     );
                   })}
@@ -50,7 +66,7 @@ const Item = props => {
               </View>
               <View style={styles.itemShop}>
                 <IconShop width={25} height={22} fill={"#8B8B8B"} />
-                <Text style={styles.shopName}>{shop}</Text>
+                <Text style={styles.shopName}>{shortenString(shop)}</Text>
               </View>
             </View>
           </View>

@@ -138,7 +138,7 @@ const DetailScreen = props => {
       // return result;
       return fulladdr;
     }
-    return  "";
+    return "";
   };
 
   // Render view
@@ -179,11 +179,13 @@ const DetailScreen = props => {
                 {convertToShortAddress(displayData.address)}
               </Text>
             </TouchableOpacity>
-            <View style={[styles.rowDirection, { marginTop: 15 }]}>
-              <View style={{ marginTop: -15 }}>
+            <View style={[styles.rowDirection, { alignItems: "center" }]}>
+              <View>
                 <IconOffer width={26} height={26} fill={"#D8B05E"} />
               </View>
-              <Text style={[styles.miniText]}>{displayData.cashback}</Text>
+              <View style={{ justifyContent: "center", height: 30 }}>
+                <Text style={[styles.miniText]}>{displayData.cashback}</Text>
+              </View>
             </View>
           </View>
         </TouchableOpacity>

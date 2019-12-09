@@ -193,6 +193,7 @@ const RecommendScreen = props => {
   const goDetail = storeID => {
     props.navigation.navigate("Detail", { storeID });
   };
+  
 
   // Store data (key-value) to localStorage
   const _storeData = async (key, value) => {
@@ -449,7 +450,7 @@ const RecommendScreen = props => {
                 )
               }
               renderItem={renderAllItemFlatList}
-              keyExtractor={item => item.store_id}
+              keyExtractor={item => item.food_id.toString() + Math.random()}
             />
           ) : 
           (
