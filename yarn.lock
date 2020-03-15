@@ -1335,9 +1335,9 @@ acorn-walk@^6.0.1:
   integrity sha512-7evsyfH1cLOCdAzZAd43Cic04yKydNx0cF+7tiA19p1XnLLPU4dpCQOqpjqwokFe//vS0QqfqqjCS2JkiIs0cA==
 
 acorn@^5.5.3:
-  version "5.7.3"
-  resolved "https://registry.yarnpkg.com/acorn/-/acorn-5.7.3.tgz#67aa231bf8812974b85235a96771eb6bd07ea279"
-  integrity sha512-T/zvzYRfbVojPWahDsE5evJdHb3oJoQfFbsrKM7w5Zcs++Tr257tia3BmMP8XYVjp1S9RZXQMh7gao96BlqZOw==
+  version "5.7.4"
+  resolved "https://registry.yarnpkg.com/acorn/-/acorn-5.7.4.tgz#3e8d8a9947d0599a1796d10225d7432f4a4acf5e"
+  integrity sha512-1D++VG7BhrtvQpNbBzovKNc1FLGGEE/oGe7b9xJm/RFHMBeUaUGpluV9RLjZa47YFdPcDAenEYuq9pQPcMdLJg==
 
 acorn@^6.0.1:
   version "6.3.0"
@@ -5848,10 +5848,10 @@ react-native-svg-transformer@^0.13.0:
     "@svgr/core" "^4.1.0"
     semver "^5.6.0"
 
-react-native-svg@^9.13.2:
-  version "9.13.2"
-  resolved "https://registry.yarnpkg.com/react-native-svg/-/react-native-svg-9.13.2.tgz#72a2e089f69af99c491586a95baf71009c263a51"
-  integrity sha512-l73+7X4mDYQBHilJ0UzFph4QmuvkngtJrfUiyLZwNLzX4T6gjyjAC2im+JNHhY7i4tU4k+I74YSCFiC7OB85Pw==
+react-native-svg@^9.13.3:
+  version "9.13.6"
+  resolved "https://registry.yarnpkg.com/react-native-svg/-/react-native-svg-9.13.6.tgz#5365fba2bc460054b90851e71f2a71006a5d373f"
+  integrity sha512-vjjuJhEhQCwWjqsgWyGy6/C/LIBM2REDxB40FU1PMhi8T3zQUwUHnA6M15pJKlQG8vaZyA+QnLyIVhjtujRgig==
   dependencies:
     css-select "^2.0.2"
     css-tree "^1.0.0-alpha.37"
